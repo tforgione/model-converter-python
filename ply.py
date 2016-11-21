@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from model import ModelParser, Exporter, Vertex, Face
+from model import ModelParser, Exporter, Vertex, Face, FaceVertex
 
 class PLYParser(ModelParser):
 
@@ -11,7 +11,7 @@ class PLYParser(ModelParser):
         self.inner_parser = PLYHeaderParser(self)
 
     def parse_line(self, string):
-        self.inner_parser.parse_line(self, string)
+        self.inner_parser.parse_line(string)
 
 class PLYHeaderParser:
     def __init__(self, parent):
@@ -45,7 +45,7 @@ class PLYElement:
         self.number = number
         self.properties = []
 
-    def add_property(name, type):
+    def add_property(self, name, type):
         self.properties.append((name, type))
 
 class PLYContentParser:
@@ -56,20 +56,23 @@ class PLYContentParser:
         self.current_element = self.parent.elements[0]
 
     def parse_line(self, string):
-        self.counter += 1
 
         split = string.split(' ')
 
         if self.current_element.name == 'vertex':
-            self.parent.add_vertex(Vertex.from_array(split))
+            self.parent.add_vertex(Vertex().from_array(split))
         elif self.current_element.name == 'face':
-            self.parent.add_face(Face(split[1], split[2], split[3]))
+            self.parent.add_face(Face(FaceVertex(split[1]), FaceVertex(split[2]), FaceVertex(split[3])))
 
         self.counter += 1
 
+        if self.counter == self.current_element.number:
+            self.next_element()
+
     def next_element(self):
         self.element_index += 1
-        self.current_element = self.parent.elements[self.element_index]
+        if self.element_index < len(self.parent.elements):
+            self.current_element = self.parent.elements[self.element_index]
 
 class PLYExporter(Exporter):
     def __init__(self, model):

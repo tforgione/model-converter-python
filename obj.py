@@ -30,7 +30,7 @@ class OBJParser(ModelParser):
                     if splits[i][j] is not '':
                         splits[i][j] = str(int(splits[i][j]) - 1)
 
-            self.addFace(Face().from_array(splits))
+            self.add_face(Face().from_array(splits))
 
 class OBJExporter(Exporter):
     def __init__(self, model):
@@ -40,34 +40,36 @@ class OBJExporter(Exporter):
         string = ""
 
         for vertex in self.model.vertices:
-            string += "n " + ' '.join([vertex.x, vertex.y, vertex.z]) + "\n"
+            string += "v " + ' '.join([vertex.x, vertex.y, vertex.z]) + "\n"
 
         string += "\n"
 
-        for tex_coord in self.model.tex_coords:
-            string += "vt " + ' '.join([tex_coord.x, tex_coord.y]) + "\n"
+        if len(self.model.tex_coords) > 0:
+            for tex_coord in self.model.tex_coords:
+                string += "vt " + ' '.join([tex_coord.x, tex_coord.y]) + "\n"
 
-        string += "\n"
+            string += "\n"
 
-        for normal in self.model.normals:
-            string += "vn " + ' '.join([normal.x, normal.y, normal.z]) + "\n"
+        if len(self.model.normals) > 0:
+            for normal in self.model.normals:
+                string += "vn " + ' '.join([normal.x, normal.y, normal.z]) + "\n"
 
-        string += "\n"
+            string += "\n"
 
         for face in self.model.faces:
             string += "f "
             arr = []
             for v in [face.a, face.b, face.c]:
                 sub_arr = []
-                sub_arr.append(v.vertex)
+                sub_arr.append(str(int(v.vertex) + 1))
                 if v.normal is None:
                     if v.texture is not None:
                         sub_arr.append('')
-                        sub_arr.append(v.texture)
+                        sub_arr.append(str(int(v.texture) + 1))
                 elif v.texture is not None:
-                    sub_arr.append(v.texture)
+                    sub_arr.append(str(int(v.texture) + 1))
                     if v.normal is not None:
-                        sub_arr.append(v.normal)
+                        sub_arr.append(str(int(v.normal + 1)))
                 arr.append('/'.join(sub_arr))
 
             string += ' '.join(arr) + '\n'

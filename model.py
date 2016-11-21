@@ -58,7 +58,7 @@ class ModelParser:
     def add_normal(self, normal):
         self.normals.append(normal)
 
-    def addFace(self, face):
+    def add_face(self, face):
         self.faces.append(face)
 
     def parse_line(self, string):
