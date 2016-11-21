@@ -97,7 +97,8 @@ class OBJParser(ModelParser):
 
             for i in range(len(splits)):
                 for j in range(len(splits[i])):
-                    splits[i][j] = str(int(splits[i][j]) - 1)
+                    if splits[i][j] is not '':
+                        splits[i][j] = str(int(splits[i][j]) - 1)
 
             self.addFace(Face().from_array(splits))
 
