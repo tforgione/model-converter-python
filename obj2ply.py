@@ -3,7 +3,8 @@
 import argparse
 import os
 
-from modelconverter import OBJParser, PLYExporter
+from obj import OBJParser
+from ply import PLYExporter
 from functools import partial
 
 def check_path(path, should_exist):
