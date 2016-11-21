@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from model import ModelParser, Exporter, Vertex, Face, FaceVertex
+from .model import ModelParser, Exporter, Vertex, Face, FaceVertex
 
 class PLYParser(ModelParser):
 

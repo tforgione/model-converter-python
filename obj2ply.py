@@ -3,8 +3,8 @@
 import argparse
 import os
 
-from obj import OBJParser
-from ply import PLYExporter
+from conv3d.obj import OBJParser
+from conv3d.ply import PLYExporter
 from functools import partial
 
 def check_path(path, should_exist):
