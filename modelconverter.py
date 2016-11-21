@@ -94,6 +94,11 @@ class OBJParser(ModelParser):
             self.add_tex_coord(TexCoord().from_array(split))
         elif first == 'f':
             splits = list(map(lambda x: x.split('/'), split))
+
+            for i in range(len(splits)):
+                for j in range(len(splits[i])):
+                    splits[i][j] = str(int(splits[i][j]) - 1)
+
             self.addFace(Face().from_array(splits))
 
 class Exporter:
@@ -105,25 +110,25 @@ class OBJExporter(Exporter):
         super().__init__(model)
 
     def __str__(self):
-        str = ""
+        string = ""
 
         for vertex in self.model.vertices:
-            str += "n " + ' '.join([vertex.x, vertex.y, vertex.z]) + "\n"
+            string += "n " + ' '.join([vertex.x, vertex.y, vertex.z]) + "\n"
 
-        str += "\n"
+        string += "\n"
 
         for tex_coord in self.model.tex_coords:
-            str += "vt " + ' '.join([tex_coord.x, tex_coord.y]) + "\n"
+            string += "vt " + ' '.join([tex_coord.x, tex_coord.y]) + "\n"
 
-        str += "\n"
+        string += "\n"
 
         for normal in self.model.normals:
-            str += "vn " + ' '.join([normal.x, normal.y, normal.z]) + "\n"
+            string += "vn " + ' '.join([normal.x, normal.y, normal.z]) + "\n"
 
-        str += "\n"
+        string += "\n"
 
         for face in self.model.faces:
-            str += "f "
+            string += "f "
             arr = []
             for v in [face.a, face.b, face.c]:
                 sub_arr = []
@@ -138,19 +143,45 @@ class OBJExporter(Exporter):
                         sub_arr.append(v.normal)
                 arr.append('/'.join(sub_arr))
 
-            str += ' '.join(arr) + '\n'
+            string += ' '.join(arr) + '\n'
+        return string
 
-        return str
+class PLYExporter(Exporter):
+    def __init__(self, model):
+        super().__init__(model)
 
+    def __str__(self):
+        # Header
+        string = "ply\nformat ascii 1.0\ncomment Automatically gnerated by model-converter\n"
+
+        # Types : vertices
+        string += "element vertex " + str(len(self.model.vertices)) +"\n"
+        string += "property float32 x\nproperty float32 y\nproperty float32 z\n"
+
+        # Types : faces
+        string += "element face " + str(len(self.model.faces)) + "\n"
+        string += "property list uint8 int32 vertex_indices\n"
+
+        # End header
+        string += "end_header\n"
+
+        # Content of the model
+        for vertex in self.model.vertices:
+            string += vertex.x + " " + vertex.y + " " + vertex.z + "\n"
+
+        for face in self.model.faces:
+            string += "3 " + face.a.vertex + " " + face.b.vertex + " " + face.c.vertex + "\n"
+
+        return string
 
 if __name__ == '__main__':
 
     parser = OBJParser()
     parser.parse_file('./examples/cube.obj')
 
-    exporter = OBJExporter(parser)
-    str = str(exporter)
+    exporter = PLYExporter(parser)
+    string = str(exporter)
 
-    print(str)
+    print(string)
 
 
