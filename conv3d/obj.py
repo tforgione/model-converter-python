@@ -13,7 +13,10 @@ class OBJParser(ModelParser):
         self.materials = []
 
     def parse_line(self, string):
-        split = string.split(' ')
+        if string == '':
+            return
+
+        split = string.split()
         first = split[0]
         split = split[1:]
 

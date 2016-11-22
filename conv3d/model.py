@@ -75,7 +75,7 @@ class ModelParser:
         import OpenGL.GL as gl
 
         gl.glColor3f(1.0,0.0,0.0)
-        gl.glBegin(gl.GL_QUADS)
+        gl.glBegin(gl.GL_TRIANGLES)
         for face in self.faces:
             v1 = self.vertices[face.a.vertex]
             v2 = self.vertices[face.b.vertex]

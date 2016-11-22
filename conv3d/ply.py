@@ -22,7 +22,7 @@ class PLYHeaderParser:
         self.parent = parent
 
     def parse_line(self, string):
-        split = string.split(' ')
+        split = string.split()
         if string == 'ply':
             return
 
@@ -60,7 +60,7 @@ class PLYContentParser:
 
     def parse_line(self, string):
 
-        split = string.split(' ')
+        split = string.split()
 
         if self.current_element.name == 'vertex':
             self.parent.add_vertex(Vertex().from_array(split))
