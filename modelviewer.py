@@ -43,9 +43,14 @@ def main(args = {}):
     glEnable(GL_BLEND)
     glClearColor(0, 0, 0, 0)
 
+    glLightfv(GL_LIGHT0, GL_POSITION, [10,5,7])
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+
     running = True
 
-    model = load_model('./examples/link.obj')
+    model = load_model('./examples/cube.obj')
+    model.generate_face_normals()
 
     while running:
         for event in pygame.event.get():

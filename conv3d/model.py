@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+from math import sqrt
+
 class Vertex:
-    def __init__(self, x = None, y = None, z = None):
+    def __init__(self, x = 0.0, y = 0.0, z = 0.0):
         self.x = x
         self.y = y
         self.z = z
@@ -11,6 +13,37 @@ class Vertex:
         self.y = float(arr[1]) if len(arr) > 1 else None
         self.z = float(arr[2]) if len(arr) > 2 else None
         return self
+
+    def __add__(self, other):
+        return Vertex(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def norm2(self):
+        return self.x * self.x + self.y * self.y + self.z * self.z
+
+    def norm(self):
+        return sqrt(self.norm2())
+
+    def normalize(self):
+        norm = self.norm()
+        if abs(norm) > 0.0001:
+            self.x /= norm
+            self.y /= norm
+            self.z /= norm
+
+    def cross_product(v1, v2):
+        return Vertex(
+            v1.y * v2.z - v1.z * v2.y,
+            v1.z * v2.x - v1.x * v2.z,
+            v1.x * v2.y - v1.y * v2.x)
+
+    def from_points(v1, v2):
+        return Vertex(
+            v2.x - v1.x,
+            v2.y - v1.y,
+            v2.z - v1.z)
+
+    def __str__(self):
+        return '(' + ", ".join([str(self.x), str(self.y), str(self.z)]) + ")"
 
 Normal = Vertex
 TexCoord = Vertex
@@ -91,13 +124,64 @@ class ModelParser:
             v1 = self.vertices[face.a.vertex]
             v2 = self.vertices[face.b.vertex]
             v3 = self.vertices[face.c.vertex]
+
+            if face.a.normal is not None:
+                n1 = self.normals[face.a.normal]
+                n2 = self.normals[face.b.normal]
+                n3 = self.normals[face.c.normal]
+
+            if face.a.normal is not None:
+                gl.glNormal3f(n1.x, n1.y, n1.z)
             gl.glVertex3f(v1.x, v1.y, v1.z)
+
+            if face.a.normal is not None:
+                gl.glNormal3f(n2.x, n2.y, n2.z)
             gl.glVertex3f(v2.x, v2.y, v2.z)
+
+            if face.a.normal is not None:
+                gl.glNormal3f(n3.x, n3.y, n3.z)
             gl.glVertex3f(v3.x, v3.y, v3.z)
+
         gl.glEnd()
 
         if self.center_and_scale:
             gl.glPopMatrix()
+
+    def generate_vertex_normals(self):
+        self.normals = [Normal() for i in self.vertices]
+
+        for face in self.faces:
+            v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
+            v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])
+            cross = Vertex.cross_product(v1, v2)
+            self.normals[face.a.vertex] += cross
+            self.normals[face.b.vertex] += cross
+            self.normals[face.c.vertex] += cross
+
+        for normal in self.normals:
+            normal.normalize()
+
+        for face in self.faces:
+            face.a.normal = face.a.vertex
+            face.b.normal = face.b.vertex
+            face.c.normal = face.c.vertex
+
+    def generate_face_normals(self):
+
+        self.normals = [Normal() for i in self.faces]
+
+        for (index, face) in enumerate(self.faces):
+
+            v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
+            v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])
+            cross = Vertex.cross_product(v1, v2)
+            cross.normalize()
+            self.normals[index] = cross
+
+            face.a.normal = index
+            face.b.normal = index
+            face.c.normal = index
+
 
 class BoundingBox:
     def __init__(self):
