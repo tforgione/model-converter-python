@@ -106,7 +106,8 @@ def main(args):
                     pygame.quit()
                     quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                pygame.mouse.get_rel()
+                if event.button == 1:
+                    pygame.mouse.get_rel()
 
         init_frame()
 
