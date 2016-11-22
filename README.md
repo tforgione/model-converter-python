@@ -1,15 +1,15 @@
 # model-converter
 
-This project aims to be a simple, lightweight, and useful 3D model editor
+This project aims to be a simple, lightweight, and useful 3D model editor.
+For the moment, only `obj` and `ply` ascii models are supported.
 
 # Scripts
 
 A few utilities to manage 3D models :
-  - `ply2obj.py` that converts a `.ply` model to a `.obj` model
-  - `obj2ply.py` that converts a `.obj` model to a `.ply` model
+  - `convert.py` that converts any type of model to any other
   - `modelviewer.py` which is a simple script that renders a 3d model
 
-## Formats supported
+## Supported format
   - Wavefront `.obj`
   - Stanford `.ply`
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from .obj import is_obj, OBJParser
-from .ply import is_ply, PLYParser
+from .obj import is_obj, OBJParser, OBJExporter
+from .ply import is_ply, PLYParser, PLYExporter
 
 def load_model(path):
     parser = None
@@ -16,3 +16,21 @@ def load_model(path):
     parser.parse_file(path)
 
     return parser
+
+def export_model(model, path):
+    exporter = None
+
+    if is_obj(path):
+        exporter = OBJExporter(model)
+    elif is_ply(path):
+        exporter = PLYExporter(model)
+    else:
+        raise Exception("File format not supported")
+
+    return exporter
+
+def convert(input, output):
+    model = load_model(input)
+    exporter = export_model(model, output)
+    return str(exporter)
+
