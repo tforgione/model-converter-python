@@ -3,6 +3,8 @@
 import sys
 import ctypes
 import pygame
+import argparse
+import os
 
 from pygame.locals import *
 from OpenGL.GL import *
@@ -10,6 +12,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 from conv3d.loadmodel import load_model
+
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
@@ -26,7 +29,7 @@ def init_frame():
     glLoadIdentity()
     gluLookAt(5,5,5,0,0,0,0,1,0)
 
-def main(args = {}):
+def main(args):
 
     pygame.init()
     display = (WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -49,8 +52,7 @@ def main(args = {}):
 
     running = True
 
-    model = load_model('./examples/cube.obj')
-    model.generate_face_normals()
+    model = load_model(args.input)
 
     while running:
         for event in pygame.event.get():
@@ -70,4 +72,9 @@ def main(args = {}):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.set_defaults(func=main)
+    parser.add_argument('-v', '--version', action='version', version='1.0')
+    parser.add_argument('-i', '--input', metavar='input', default=None, help='Input model')
+    args = parser.parse_args()
+    args.func(args)
