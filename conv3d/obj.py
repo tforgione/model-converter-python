@@ -3,6 +3,9 @@
 from .model import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
 from functools import reduce
 
+def is_obj(filename):
+    return filename[-4:] == '.obj'
+
 class OBJParser(ModelParser):
 
     def __init__(self):
@@ -69,7 +72,7 @@ class OBJExporter(Exporter):
                 elif v.texture is not None:
                     sub_arr.append(str(int(v.texture) + 1))
                     if v.normal is not None:
-                        sub_arr.append(str(int(v.normal + 1)))
+                        sub_arr.append(str(int(v.normal) + 1))
                 arr.append('/'.join(sub_arr))
 
             string += ' '.join(arr) + '\n'

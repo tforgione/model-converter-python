@@ -2,6 +2,9 @@
 
 from .model import ModelParser, Exporter, Vertex, Face, FaceVertex
 
+def is_ply(filename):
+    return filename[-4:] == '.ply'
+
 class PLYParser(ModelParser):
 
     def __init__(self):
@@ -101,5 +104,4 @@ class PLYExporter(Exporter):
             string += "3 " + face.a.vertex + " " + face.b.vertex + " " + face.c.vertex + "\n"
 
         return string
-
 

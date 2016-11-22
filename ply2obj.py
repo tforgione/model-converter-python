@@ -4,7 +4,7 @@ import argparse
 import os
 
 from conv3d.obj import OBJExporter
-from conv3d.ply import PLYParser
+from conv3d.loadmodel import load_model
 from functools import partial
 
 def check_path(path, should_exist):
@@ -17,8 +17,7 @@ def check_path(path, should_exist):
     return path
 
 def main(args):
-    parser = PLYParser()
-    parser.parse_file(args.input)
+    parser = load_model(args.input)
     exporter = OBJExporter(parser)
     result = str(exporter)
 
