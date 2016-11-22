@@ -45,7 +45,7 @@ def main(args = {}):
 
     running = True
 
-    model = load_model('./examples/cube.obj')
+    model = load_model('./examples/link.obj')
 
     while running:
         for event in pygame.event.get():

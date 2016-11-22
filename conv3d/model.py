@@ -48,9 +48,12 @@ class ModelParser:
         self.normals = []
         self.tex_coords = []
         self.faces = []
+        self.bounding_box = BoundingBox()
+        self.center_and_scale = True
 
     def add_vertex(self, vertex):
         self.vertices.append(vertex)
+        self.bounding_box.add(vertex)
 
     def add_tex_coord(self, tex_coord):
         self.tex_coords.append(tex_coord)
@@ -75,6 +78,14 @@ class ModelParser:
         import OpenGL.GL as gl
 
         gl.glColor3f(1.0,0.0,0.0)
+
+        if self.center_and_scale:
+            center = self.bounding_box.get_center()
+            scale = self.bounding_box.get_scale() / 2
+            gl.glPushMatrix()
+            gl.glScalef(1/scale, 1/scale, 1/scale)
+            gl.glTranslatef(-center.x, -center.y, -center.z)
+
         gl.glBegin(gl.GL_TRIANGLES)
         for face in self.faces:
             v1 = self.vertices[face.a.vertex]
@@ -84,6 +95,49 @@ class ModelParser:
             gl.glVertex3f(v2.x, v2.y, v2.z)
             gl.glVertex3f(v3.x, v3.y, v3.z)
         gl.glEnd()
+
+        if self.center_and_scale:
+            gl.glPopMatrix()
+
+class BoundingBox:
+    def __init__(self):
+        self.min_x = +float('inf')
+        self.min_y = +float('inf')
+        self.min_z = +float('inf')
+
+        self.max_x = -float('inf')
+        self.max_y = -float('inf')
+        self.max_z = -float('inf')
+
+    def add(self, vertex):
+        self.min_x = min(self.min_x, vertex.x)
+        self.min_y = min(self.min_y, vertex.y)
+        self.min_z = min(self.min_z, vertex.z)
+
+        self.max_x = max(self.max_x, vertex.x)
+        self.max_y = max(self.max_y, vertex.y)
+        self.max_z = max(self.max_z, vertex.z)
+
+    def __str__(self):
+        return "[{},{}],[{},{}],[{},{}]".format(
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.max_x,
+            self.max_y,
+            self.max_z)
+
+    def get_center(self):
+        return Vertex(
+            (self.min_x + self.max_x) / 2,
+            (self.min_y + self.max_y) / 2,
+            (self.min_z + self.max_z) / 2)
+
+    def get_scale(self):
+        return max(
+            abs(self.max_x - self.min_x),
+            abs(self.max_y - self.min_y),
+            abs(self.max_z - self.min_z))
 
 
 class Exporter:
