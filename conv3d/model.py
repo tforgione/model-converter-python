@@ -17,6 +17,12 @@ class Vertex:
     def __add__(self, other):
         return Vertex(self.x + other.x, self.y + other.y, self.z + other.z)
 
+    def __mul__(self, other):
+        return Vertex(self.x * other, self.y * other, self.z * other)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
     def norm2(self):
         return self.x * self.x + self.y * self.y + self.z * self.z
 
@@ -44,6 +50,9 @@ class Vertex:
 
     def __str__(self):
         return '(' + ", ".join([str(self.x), str(self.y), str(self.z)]) + ")"
+
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
 
 Normal = Vertex
 TexCoord = Vertex
