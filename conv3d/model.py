@@ -7,9 +7,9 @@ class Vertex:
         self.z = z
 
     def from_array(self, arr):
-        self.x = arr[0] if len(arr) > 0 else None
-        self.y = arr[1] if len(arr) > 1 else None
-        self.z = arr[2] if len(arr) > 2 else None
+        self.x = float(arr[0]) if len(arr) > 0 else None
+        self.y = float(arr[1]) if len(arr) > 1 else None
+        self.z = float(arr[2]) if len(arr) > 2 else None
         return self
 
 Normal = Vertex
@@ -22,9 +22,9 @@ class FaceVertex:
         self.normal = normal
 
     def from_array(self, arr):
-        self.vertex  = arr[0] if len(arr) > 0 else None
-        self.texture = arr[1] if len(arr) > 1 else None
-        self.normal  = arr[2] if len(arr) > 2 else None
+        self.vertex  = int(arr[0]) if len(arr) > 0 else None
+        self.texture = int(arr[1]) if len(arr) > 1 else None
+        self.normal  = int(arr[2]) if len(arr) > 2 else None
         return self
 
 class Face:
@@ -69,6 +69,22 @@ class ModelParser:
             for line in f.readlines():
                 line = line.rstrip()
                 self.parse_line(line)
+
+    def gl_draw(self):
+
+        import OpenGL.GL as gl
+
+        gl.glColor3f(1.0,0.0,0.0)
+        gl.glBegin(gl.GL_QUADS)
+        for face in self.faces:
+            v1 = self.vertices[face.a.vertex]
+            v2 = self.vertices[face.b.vertex]
+            v3 = self.vertices[face.c.vertex]
+            gl.glVertex3f(v1.x, v1.y, v1.z)
+            gl.glVertex3f(v2.x, v2.y, v2.z)
+            gl.glVertex3f(v3.x, v3.y, v3.z)
+        gl.glEnd()
+
 
 class Exporter:
     def __init__(self, model):

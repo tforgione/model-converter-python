@@ -65,7 +65,7 @@ class PLYContentParser:
         if self.current_element.name == 'vertex':
             self.parent.add_vertex(Vertex().from_array(split))
         elif self.current_element.name == 'face':
-            self.parent.add_face(Face(FaceVertex(split[1]), FaceVertex(split[2]), FaceVertex(split[3])))
+            self.parent.add_face(Face(FaceVertex(int(split[1])), FaceVertex(int(split[2])), FaceVertex(int(split[3]))))
 
         self.counter += 1
 
@@ -98,10 +98,10 @@ class PLYExporter(Exporter):
 
         # Content of the model
         for vertex in self.model.vertices:
-            string += vertex.x + " " + vertex.y + " " + vertex.z + "\n"
+            string += str(vertex.x) + " " + str(vertex.y) + " " + str(vertex.z) + "\n"
 
         for face in self.model.faces:
-            string += "3 " + face.a.vertex + " " + face.b.vertex + " " + face.c.vertex + "\n"
+            string += "3 " + str(face.a.vertex) + " " + str(face.b.vertex) + " " + str(face.c.vertex) + "\n"
 
         return string
 
