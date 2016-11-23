@@ -42,7 +42,6 @@ class TrackBallControls:
 
         dV = Vertex(move[1] * time * coeff, move[0] * time * coeff, 0)
         dTheta = dV.norm2()
-        print(dTheta)
 
         if abs(dTheta) < 0.00001:
             return
@@ -96,7 +95,7 @@ def main(args):
     running = True
 
     model = load_model(args.input)
-    # model.generate_vbo()
+    model.generate_vbos()
 
     while running:
         for event in pygame.event.get():
