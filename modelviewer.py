@@ -42,8 +42,9 @@ class TrackBallControls:
 
         dV = Vertex(move[1] * time * coeff, move[0] * time * coeff, 0)
         dTheta = dV.norm2()
+        print(dTheta)
 
-        if abs(dTheta) < 0.01:
+        if abs(dTheta) < 0.00001:
             return
 
         dV.normalize()
@@ -95,6 +96,7 @@ def main(args):
     running = True
 
     model = load_model(args.input)
+    # model.generate_vbo()
 
     while running:
         for event in pygame.event.get():
@@ -109,6 +111,10 @@ def main(args):
                 if event.button == 1:
                     pygame.mouse.get_rel()
 
+        # Update physics
+        controls.update()
+
+        # Draw frame
         init_frame()
 
         glPushMatrix()
@@ -119,9 +125,7 @@ def main(args):
         glFlush()
         pygame.display.flip()
 
-        # Update physics
-        controls.update()
-
+        # Sleep
         pygame.time.wait(10)
 
 

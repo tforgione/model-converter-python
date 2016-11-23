@@ -92,6 +92,7 @@ class ModelParser:
         self.faces = []
         self.bounding_box = BoundingBox()
         self.center_and_scale = True
+        self.vbo = None
 
     def add_vertex(self, vertex):
         self.vertices.append(vertex)
@@ -128,33 +129,58 @@ class ModelParser:
             gl.glScalef(1/scale, 1/scale, 1/scale)
             gl.glTranslatef(-center.x, -center.y, -center.z)
 
-        gl.glBegin(gl.GL_TRIANGLES)
+        if self.vbo is not None:
+
+            self.vbo.bind()
+            gl.glEnableClientState(gl.GL_VERTEX_ARRAY);
+            gl.glVertexPointerf(self.vbo)
+            gl.glDrawArrays(gl.GL_TRIANGLES, 0, len(self.vbo.data) * 9)
+            self.vbo.unbind()
+
+        else:
+
+            gl.glBegin(gl.GL_TRIANGLES)
+            for face in self.faces:
+                v1 = self.vertices[face.a.vertex]
+                v2 = self.vertices[face.b.vertex]
+                v3 = self.vertices[face.c.vertex]
+
+                if face.a.normal is not None:
+                    n1 = self.normals[face.a.normal]
+                    n2 = self.normals[face.b.normal]
+                    n3 = self.normals[face.c.normal]
+
+                if face.a.normal is not None:
+                    gl.glNormal3f(n1.x, n1.y, n1.z)
+                gl.glVertex3f(v1.x, v1.y, v1.z)
+
+                if face.a.normal is not None:
+                    gl.glNormal3f(n2.x, n2.y, n2.z)
+                gl.glVertex3f(v2.x, v2.y, v2.z)
+
+                if face.a.normal is not None:
+                    gl.glNormal3f(n3.x, n3.y, n3.z)
+                gl.glVertex3f(v3.x, v3.y, v3.z)
+
+            gl.glEnd()
+
+        if self.center_and_scale:
+            gl.glPopMatrix()
+
+    def generate_vbo(self):
+        from OpenGL.arrays import vbo
+        from numpy import array
+        # Build VBO
+        l = []
+
         for face in self.faces:
             v1 = self.vertices[face.a.vertex]
             v2 = self.vertices[face.b.vertex]
             v3 = self.vertices[face.c.vertex]
+            l += [[v1.x, v1.y, v1.z], [v2.x, v2.y, v2.z], [v3.x, v3.y, v3.z]]
 
-            if face.a.normal is not None:
-                n1 = self.normals[face.a.normal]
-                n2 = self.normals[face.b.normal]
-                n3 = self.normals[face.c.normal]
+        self.vbo = vbo.VBO(array(l, 'f'))
 
-            if face.a.normal is not None:
-                gl.glNormal3f(n1.x, n1.y, n1.z)
-            gl.glVertex3f(v1.x, v1.y, v1.z)
-
-            if face.a.normal is not None:
-                gl.glNormal3f(n2.x, n2.y, n2.z)
-            gl.glVertex3f(v2.x, v2.y, v2.z)
-
-            if face.a.normal is not None:
-                gl.glNormal3f(n3.x, n3.y, n3.z)
-            gl.glVertex3f(v3.x, v3.y, v3.z)
-
-        gl.glEnd()
-
-        if self.center_and_scale:
-            gl.glPopMatrix()
 
     def generate_vertex_normals(self):
         self.normals = [Normal() for i in self.vertices]
