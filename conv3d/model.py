@@ -65,8 +65,17 @@ class FaceVertex:
 
     def from_array(self, arr):
         self.vertex  = int(arr[0]) if len(arr) > 0 else None
-        self.texture = int(arr[1]) if len(arr) > 1 else None
-        self.normal  = int(arr[2]) if len(arr) > 2 else None
+
+        try:
+            self.texture = int(arr[1]) if len(arr) > 1 else None
+        except:
+            self.texture = None
+
+        try:
+            self.normal  = int(arr[2]) if len(arr) > 2 else None
+        except:
+            self.normal = None
+
         return self
 
 class Face:
@@ -162,15 +171,27 @@ class ModelParser:
                     gl.glNormal3f(n1.x, n1.y, n1.z)
                 gl.glVertex3f(v1.x, v1.y, v1.z)
 
-                if face.a.normal is not None:
+                if face.b.normal is not None:
                     gl.glNormal3f(n2.x, n2.y, n2.z)
                 gl.glVertex3f(v2.x, v2.y, v2.z)
 
-                if face.a.normal is not None:
+                if face.c.normal is not None:
                     gl.glNormal3f(n3.x, n3.y, n3.z)
                 gl.glVertex3f(v3.x, v3.y, v3.z)
 
             gl.glEnd()
+
+            # Draw the normals
+            # gl.glDisable(gl.GL_LIGHTING)
+            # gl.glColor3f(1,0,0)
+            # gl.glBegin(gl.GL_LINES)
+            # for index in range(len(self.vertices)):
+            #     origin = self.vertices[index]
+            #     target = self.vertices[index] + self.normals[index]
+            #     gl.glVertex3f(origin.x, origin.y, origin.z)
+            #     gl.glVertex3f(target.x, target.y, target.z)
+            # gl.glEnd()
+            # gl.glEnable(gl.GL_LIGHTING)
 
         if self.center_and_scale:
             gl.glPopMatrix()
