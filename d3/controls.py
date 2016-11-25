@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ..conv.model import Vertex
+from .conv.model import Vertex
 
 import pygame
 
