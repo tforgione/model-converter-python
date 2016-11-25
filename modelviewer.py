@@ -13,10 +13,9 @@ from OpenGL.GL.shaders import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
-from conv3d.loadmodel import load_model
-from conv3d.model import Vertex
-
-from controls import TrackBallControls
+from d3.conv.loadmodel import load_model
+from d3.conv.model import Vertex
+from d3.controls.controls import TrackBallControls
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
@@ -67,7 +66,6 @@ def main(args):
     with open('shaders/shader.frag') as f:
         FRAGMENT_SHADER = compileShader(f.read(), GL_FRAGMENT_SHADER)
 
-    print(VERTEX_SHADER, FRAGMENT_SHADER)
     SHADER = compileProgram(VERTEX_SHADER, FRAGMENT_SHADER)
 
     while running:

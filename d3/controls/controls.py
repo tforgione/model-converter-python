@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+from ..conv.model import Vertex
+
+import pygame
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+import math
+
 class Controls:
     def __init__(self):
         pass
@@ -12,7 +22,7 @@ class Controls:
 
 class TrackBallControls(Controls):
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         self.vertex = Vertex()
         self.theta = 0
 
