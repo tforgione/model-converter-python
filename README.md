@@ -7,7 +7,7 @@ For the moment, only `obj` and `ply` ascii models are supported.
 
 A few utilities to manage 3D models :
   - `convert.py` that converts any type of model to any other
-  - `modelviewer.py` which is a simple script that renders a 3d model
+  - `viewer.py` which is a simple script that renders a 3d model
 
 ## Supported format
   - Wavefront `.obj`
