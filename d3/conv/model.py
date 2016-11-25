@@ -181,18 +181,6 @@ class ModelParser:
 
             gl.glEnd()
 
-            # Draw the normals
-            # gl.glDisable(gl.GL_LIGHTING)
-            # gl.glColor3f(1,0,0)
-            # gl.glBegin(gl.GL_LINES)
-            # for index in range(len(self.vertices)):
-            #     origin = self.vertices[index]
-            #     target = self.vertices[index] + self.normals[index]
-            #     gl.glVertex3f(origin.x, origin.y, origin.z)
-            #     gl.glVertex3f(target.x, target.y, target.z)
-            # gl.glEnd()
-            # gl.glEnable(gl.GL_LIGHTING)
-
         if self.center_and_scale:
             gl.glPopMatrix()
 
@@ -209,11 +197,11 @@ class ModelParser:
             v3 = self.vertices[face.c.vertex]
             v += [[v1.x, v1.y, v1.z], [v2.x, v2.y, v2.z], [v3.x, v3.y, v3.z]]
 
-            n1 = self.normals[face.a.normal]
-            n2 = self.normals[face.b.normal]
-            n3 = self.normals[face.c.normal]
-            n += [[n1.x, n1.y, n1.z], [n2.x, n2.y, n2.z], [n3.x, n3.y, n3.z]]
-
+            if face.a.normal is not None:
+                n1 = self.normals[face.a.normal]
+                n2 = self.normals[face.b.normal]
+                n3 = self.normals[face.c.normal]
+                n += [[n1.x, n1.y, n1.z], [n2.x, n2.y, n2.z], [n3.x, n3.y, n3.z]]
 
         self.vertex_vbo = vbo.VBO(array(v, 'f'))
         self.normal_vbo = vbo.VBO(array(n, 'f'))
