@@ -25,8 +25,6 @@ y = 0.5
 width = 1
 height = 1
 
-
-
 def init_frame():
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
