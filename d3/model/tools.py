@@ -2,6 +2,7 @@
 
 from .obj import is_obj, OBJParser, OBJExporter
 from .ply import is_ply, PLYParser, PLYExporter
+from .basemodel import ModelParser, Exporter
 
 def load_model(path):
     parser = None

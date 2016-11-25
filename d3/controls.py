@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .conv.model import Vertex
+from .geometry import Vector
 
 import pygame
 
@@ -22,7 +22,7 @@ class Controls:
 class TrackBallControls(Controls):
     def __init__(self):
         super().__init__()
-        self.vertex = Vertex()
+        self.vertex = Vector()
         self.theta = 0
 
     def apply(self):
@@ -36,7 +36,7 @@ class TrackBallControls(Controls):
         coeff = 0.001
         move = pygame.mouse.get_rel()
 
-        dV = Vertex(move[1] * time * coeff, move[0] * time * coeff, 0)
+        dV = Vector(move[1] * time * coeff, move[0] * time * coeff, 0)
         dTheta = dV.norm2()
 
         if abs(dTheta) < 0.00001:
@@ -49,9 +49,9 @@ class TrackBallControls(Controls):
         cosDT2 = math.cos(dTheta / 2)
         sinDT2 = math.sin(dTheta / 2)
 
-        A = cosT2 * sinDT2 * dV + cosDT2 * sinT2 * self.vertex + sinDT2 * sinT2 * Vertex.cross_product(dV, self.vertex)
+        A = cosT2 * sinDT2 * dV + cosDT2 * sinT2 * self.vertex + sinDT2 * sinT2 * Vector.cross_product(dV, self.vertex)
 
-        self.theta = 2 * math.acos(cosT2 * cosDT2 - sinT2 * sinDT2 * Vertex.dot(dV, self.vertex))
+        self.theta = 2 * math.acos(cosT2 * cosDT2 - sinT2 * sinDT2 * Vector.dot(dV, self.vertex))
 
         self.vertex = A
         self.vertex.normalize()
