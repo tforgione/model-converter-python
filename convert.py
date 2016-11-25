@@ -3,9 +3,8 @@
 import argparse
 import os
 
-from d3.model.ply import PLYExporter
-from d3.model.tools import convert
-from functools import partial
+import d3.model.tools as mt
+import functools as fc
 
 def check_path(path, should_exist):
     """ Check that a path (file or folder) exists or not and return it.
@@ -18,7 +17,7 @@ def check_path(path, should_exist):
 
 def main(args):
     output = args.output if args.output is not None else '.' + args.type
-    result = convert(args.input, output)
+    result = mt.convert(args.input, output)
 
     if args.output is None:
         print(result)
@@ -31,7 +30,7 @@ if __name__ == '__main__':
     parser.set_defaults(func=main)
     parser.add_argument('-v', '--version', action='version', version='1.0')
     parser.add_argument('-i', '--input', metavar='input',
-                        type=partial(check_path, should_exist=True), default=None,
+                        type=fc.partial(check_path, should_exist=True), default=None,
                         help='Input file (.obj)')
     parser.add_argument('-o', '--output', metavar='output',
                         help='Output path')

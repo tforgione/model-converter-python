@@ -3,10 +3,7 @@
 from .geometry import Vector
 
 import pygame
-
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
+import OpenGL.GL as gl
 import math
 
 class Controls:
@@ -26,7 +23,7 @@ class TrackBallControls(Controls):
         self.theta = 0
 
     def apply(self):
-        glRotatef(self.theta * 180 / math.pi, self.vertex.x, self.vertex.y, self.vertex.z)
+        gl.glRotatef(self.theta * 180 / math.pi, self.vertex.x, self.vertex.y, self.vertex.z)
 
     def update(self, time = 10):
 

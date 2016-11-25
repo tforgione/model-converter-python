@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from math import sqrt
+import math
 
 class Vector:
     def __init__(self, x = 0.0, y = 0.0, z = 0.0):
@@ -27,7 +27,7 @@ class Vector:
         return self.x * self.x + self.y * self.y + self.z * self.z
 
     def norm(self):
-        return sqrt(self.norm2())
+        return math.sqrt(self.norm2())
 
     def normalize(self):
         norm = self.norm()

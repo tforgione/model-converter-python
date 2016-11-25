@@ -2,15 +2,14 @@
 
 import sys
 import ctypes
-import pygame
 import argparse
 import os
 import math
 
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GL.shaders import *
-from OpenGL.GLU import *
+import pygame as pg
+import pygame.locals as pgl
+import OpenGL.GL as gl
+import OpenGL.GLU as glu
 
 from d3.model.tools import load_model
 from d3.geometry import Vector
@@ -26,20 +25,20 @@ def main(args):
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = TrackBallControls()
 
-    pygame.init()
+    pg.init()
     display = (WINDOW_WIDTH, WINDOW_HEIGHT)
-    pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+    pg.display.set_mode(display, pgl.DOUBLEBUF | pgl.OPENGL)
 
     # OpenGL init
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(45, (WINDOW_WIDTH / WINDOW_HEIGHT), 0.1, 50.0)
+    gl.glMatrixMode(gl.GL_PROJECTION)
+    gl.glLoadIdentity()
+    glu.gluPerspective(45, (WINDOW_WIDTH / WINDOW_HEIGHT), 0.1, 50.0)
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    glEnable(GL_DEPTH_TEST)
-    glEnable(GL_CULL_FACE)
-    glEnable(GL_BLEND)
-    glClearColor(0, 0, 0, 0)
+    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+    gl.glEnable(gl.GL_DEPTH_TEST)
+    gl.glEnable(gl.GL_CULL_FACE)
+    gl.glEnable(gl.GL_BLEND)
+    gl.glClearColor(0, 0, 0, 0)
 
     running = True
 
@@ -49,40 +48,40 @@ def main(args):
     shader = DefaultShader()
 
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
                 quit()
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
+            elif event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    pg.quit()
                     quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    pygame.mouse.get_rel()
+                    pg.mouse.get_rel()
 
         # Update physics
         controls.update()
 
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+        gl.glMatrixMode(gl.GL_MODELVIEW)
+        gl.glLoadIdentity()
 
         camera.look()
 
-        glPushMatrix()
+        gl.glPushMatrix()
         controls.apply()
         shader.bind()
         model.gl_draw()
         shader.unbind()
-        glPopMatrix()
+        gl.glPopMatrix()
 
-        glFlush()
-        pygame.display.flip()
+        gl.glFlush()
+        pg.display.flip()
 
         # Sleep
-        pygame.time.wait(10)
+        pg.time.wait(10)
 
 
 if __name__ == '__main__':
