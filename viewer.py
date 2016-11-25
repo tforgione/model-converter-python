@@ -73,7 +73,7 @@ def main(args):
         gl.glPushMatrix()
         controls.apply()
         shader.bind()
-        model.gl_draw()
+        model.draw()
         shader.unbind()
         gl.glPopMatrix()
 
