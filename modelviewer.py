@@ -11,7 +11,6 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GL.shaders import *
 from OpenGL.GLU import *
-from OpenGL.GLUT import *
 
 from d3.conv.loadmodel import load_model
 from d3.conv.model import Vertex
