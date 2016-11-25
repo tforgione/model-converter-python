@@ -78,7 +78,7 @@ class ModelParser:
                 line = line.rstrip()
                 self.parse_line(line)
 
-    def gl_draw(self):
+    def draw(self):
 
         import OpenGL.GL as gl
 
