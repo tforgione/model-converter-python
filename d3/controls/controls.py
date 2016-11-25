@@ -57,4 +57,9 @@ class TrackBallControls(Controls):
         self.vertex = A
         self.vertex.normalize()
 
+class OrbitControls(Controls):
+    def __init__(self):
+        super().__init__()
+        self.phi = 0
+        self.theta = 0
 

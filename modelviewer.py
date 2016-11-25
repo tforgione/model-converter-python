@@ -16,6 +16,7 @@ from OpenGL.GLUT import *
 from d3.conv.loadmodel import load_model
 from d3.conv.model import Vertex
 from d3.controls.controls import TrackBallControls
+from d3.cameras.camera import Camera
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
@@ -25,15 +26,9 @@ y = 0.5
 width = 1
 height = 1
 
-def init_frame():
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-    gluLookAt(0,0,5,0,0,0,0,1,0)
-
 def main(args):
 
+    camera = Camera(Vertex(0,0,5), Vertex(0,0,0))
     controls = TrackBallControls()
 
     pygame.init()
@@ -82,8 +77,12 @@ def main(args):
         # Update physics
         controls.update()
 
-        # Draw frame
-        init_frame()
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+        camera.look()
 
         glPushMatrix()
         controls.apply()
