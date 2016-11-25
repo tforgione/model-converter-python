@@ -14,8 +14,8 @@ from OpenGL.GLU import *
 
 from d3.conv.loadmodel import load_model
 from d3.conv.model import Vertex
-from d3.controls.controls import TrackBallControls
-from d3.cameras.camera import Camera
+from d3.controls import TrackBallControls
+from d3.camera import Camera
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
@@ -53,9 +53,9 @@ def main(args):
 
     VERTEX_SHADER = None
     FRAGMENT_SHADER = None
-    with open('shaders/shader.vert') as f:
+    with open('assets/shaders/shader.vert') as f:
         VERTEX_SHADER = compileShader(f.read(), GL_VERTEX_SHADER)
-    with open('shaders/shader.frag') as f:
+    with open('assets/shaders/shader.frag') as f:
         FRAGMENT_SHADER = compileShader(f.read(), GL_FRAGMENT_SHADER)
 
     SHADER = compileProgram(VERTEX_SHADER, FRAGMENT_SHADER)
