@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .conv.model import Vertex
+from .geometry import Vector
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -8,9 +8,9 @@ from OpenGL.GLU import *
 
 class Camera:
     def __init__(self, position = None, target = None, up = None):
-        self.position = Vertex() if position is None else position
-        self.target = Vertex() if target is None else target
-        self.up = Vertex(0.0,1.0,0.0) if up is None else target
+        self.position = Vector() if position is None else position
+        self.target = Vector() if target is None else target
+        self.up = Vector(0.0,1.0,0.0) if up is None else target
 
     def look(self):
         gluLookAt(

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .model import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
+from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
 from functools import reduce
 
 def is_obj(filename):

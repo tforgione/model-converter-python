@@ -3,8 +3,8 @@
 import argparse
 import os
 
-from d3.conv.ply import PLYExporter
-from d3.conv.loadmodel import convert
+from d3.model.ply import PLYExporter
+from d3.model.tools import convert
 from functools import partial
 
 def check_path(path, should_exist):

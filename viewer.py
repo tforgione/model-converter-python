@@ -12,22 +12,18 @@ from OpenGL.GL import *
 from OpenGL.GL.shaders import *
 from OpenGL.GLU import *
 
-from d3.conv.loadmodel import load_model
-from d3.conv.model import Vertex
+from d3.model.tools import load_model
+from d3.geometry import Vector
 from d3.controls import TrackBallControls
 from d3.camera import Camera
+from d3.shader import DefaultShader
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 768
 
-x = -0.5
-y = 0.5
-width = 1
-height = 1
-
 def main(args):
 
-    camera = Camera(Vertex(0,0,5), Vertex(0,0,0))
+    camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = TrackBallControls()
 
     pygame.init()
@@ -50,15 +46,7 @@ def main(args):
     model = load_model(args.input)
     model.generate_vbos()
 
-
-    VERTEX_SHADER = None
-    FRAGMENT_SHADER = None
-    with open('assets/shaders/shader.vert') as f:
-        VERTEX_SHADER = compileShader(f.read(), GL_VERTEX_SHADER)
-    with open('assets/shaders/shader.frag') as f:
-        FRAGMENT_SHADER = compileShader(f.read(), GL_FRAGMENT_SHADER)
-
-    SHADER = compileProgram(VERTEX_SHADER, FRAGMENT_SHADER)
+    shader = DefaultShader()
 
     while running:
         for event in pygame.event.get():
@@ -85,9 +73,9 @@ def main(args):
 
         glPushMatrix()
         controls.apply()
-        glUseProgram(SHADER)
+        shader.bind()
         model.gl_draw()
-        glUseProgram(0)
+        shader.unbind()
         glPopMatrix()
 
         glFlush()
