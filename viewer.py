@@ -13,7 +13,7 @@ import OpenGL.GLU as glu
 
 from d3.model.tools import load_model
 from d3.geometry import Vector
-from d3.controls import TrackBallControls
+from d3.controls import TrackBallControls, OrbitControls
 from d3.camera import Camera
 from d3.shader import DefaultShader
 
@@ -23,7 +23,7 @@ WINDOW_HEIGHT = 768
 def main(args):
 
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
-    controls = TrackBallControls()
+    controls = OrbitControls()
 
     pg.init()
     display = (WINDOW_WIDTH, WINDOW_HEIGHT)
