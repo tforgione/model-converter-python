@@ -28,6 +28,7 @@ def main(args):
     pg.init()
     display = (WINDOW_WIDTH, WINDOW_HEIGHT)
     pg.display.set_mode(display, pgl.DOUBLEBUF | pgl.OPENGL)
+    pg.display.set_caption('Model-Converter')
 
     # OpenGL init
     gl.glMatrixMode(gl.GL_PROJECTION)
