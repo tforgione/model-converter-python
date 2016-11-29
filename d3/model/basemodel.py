@@ -43,6 +43,15 @@ class Face:
         self.c = FaceVertex().from_array(arr[2])
         return self
 
+class Material:
+    def __init__(self, name):
+        self.name = name
+        self.Ka = None
+        self.Kd = None
+        self.Ks = None
+        self.map_Kd = None
+
+
 class ModelParser:
 
     def __init__(self):
@@ -55,6 +64,7 @@ class ModelParser:
         self.vertex_vbo = None
         self.tex_coord_vbo = None
         self.normal_vbo = None
+        self.path = None
 
     def add_vertex(self, vertex):
         self.vertices.append(vertex)
@@ -73,10 +83,17 @@ class ModelParser:
         pass
 
     def parse_file(self, path):
+        self.path = path
         with open(path) as f:
             for line in f.readlines():
                 line = line.rstrip()
                 self.parse_line(line)
+
+        for material in self.mtl.materials:
+            print(material.name)
+            print('\tKa ' + str(material.Ka))
+            print('\tKd ' + str(material.Kd))
+            print('\tKs ' + str(material.Ks))
 
     def draw(self):
 
