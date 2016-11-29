@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face, Material
+from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
+from .mesh import Material, MeshPart
 from functools import reduce
 import os.path
 import PIL.Image
@@ -24,7 +25,7 @@ class OBJParser(ModelParser):
         split = split[1:]
 
         if first == 'usemtl':
-            self.current_material = split[0]
+            self.current_material = self.mtl[split[0]]
         elif first == 'mtllib':
             path = os.path.join(os.path.dirname(self.path), split[0])
             self.mtl = MTLParser(self)
@@ -73,7 +74,7 @@ class MTLParser:
         elif first == 'Ks':
             self.current_mtl.Ks = Vertex().from_array(split)
         elif first == 'map_Kd':
-            self.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[0]))
+            self.current_mtl.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[0]))
 
 
     def parse_file(self, path):
@@ -81,6 +82,11 @@ class MTLParser:
             for line in f.readlines():
                 line = line.rstrip()
                 self.parse_line(line)
+
+    def __getitem__(self, key):
+        for material in self.materials:
+            if material.name == key:
+                return material
 
 
 class OBJExporter(Exporter):

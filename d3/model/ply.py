@@ -82,6 +82,9 @@ class PLYExporter(Exporter):
         super().__init__(model)
 
     def __str__(self):
+
+        faces = sum([part.faces for part in self.model.parts], [])
+
         # Header
         string = "ply\nformat ascii 1.0\ncomment Automatically gnerated by model-converter\n"
 
@@ -90,7 +93,7 @@ class PLYExporter(Exporter):
         string += "property float32 x\nproperty float32 y\nproperty float32 z\n"
 
         # Types : faces
-        string += "element face " + str(len(self.model.faces)) + "\n"
+        string += "element face " + str(len(faces)) + "\n"
         string += "property list uint8 int32 vertex_indices\n"
 
         # End header
@@ -100,7 +103,7 @@ class PLYExporter(Exporter):
         for vertex in self.model.vertices:
             string += str(vertex.x) + " " + str(vertex.y) + " " + str(vertex.z) + "\n"
 
-        for face in self.model.faces:
+        for face in faces:
             string += "3 " + str(face.a.vertex) + " " + str(face.b.vertex) + " " + str(face.c.vertex) + "\n"
 
         return string

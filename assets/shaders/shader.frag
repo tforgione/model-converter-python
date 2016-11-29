@@ -10,5 +10,6 @@ void main() {
     vec3 ambientFactor = ambientLight;
     vec3 lambertFactor = max(vec3(0.0,0.0,0.0), dot(directionnalLight, fNormal) * directionnalLightFactor);
 
+    vec4 texel = texture2D(tex, gl_TexCoord[0].xy);
     gl_FragColor = vec4(ambientFactor + lambertFactor, 1.0);
 }
