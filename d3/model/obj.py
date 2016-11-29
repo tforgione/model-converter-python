@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
+from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face, Material
 from functools import reduce
+import os.path
+import PIL.Image
+
 
 def is_obj(filename):
     return filename[-4:] == '.obj'
@@ -10,7 +13,7 @@ class OBJParser(ModelParser):
 
     def __init__(self):
         super().__init__()
-        self.materials = []
+        self.mtl = None
 
     def parse_line(self, string):
         if string == '':
@@ -22,6 +25,10 @@ class OBJParser(ModelParser):
 
         if first == 'usemtl':
             self.currentMaterial = split[0]
+        elif first == 'mtllib':
+            path = os.path.join(os.path.dirname(self.path), split[0])
+            self.mtl = MTLParser(self)
+            self.mtl.parse_file(path)
         elif first == 'v':
             self.add_vertex(Vertex().from_array(split))
         elif first == 'vn':
@@ -37,6 +44,42 @@ class OBJParser(ModelParser):
                         splits[i][j] = int(splits[i][j]) - 1
 
             self.add_face(Face().from_array(splits))
+
+class MTLParser:
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.materials = []
+        self.current_mtl = None
+
+    def parse_line(self, string):
+
+        if string == '':
+            return
+
+        split = string.split()
+        first = split[0]
+        split = split[1:]
+
+        if first == 'newmtl':
+            self.current_mtl = Material(split[0])
+            self.materials.append(self.current_mtl)
+        elif first == 'Ka':
+            self.current_mtl.Ka = Vertex().from_array(split)
+        elif first == 'Kd':
+            self.current_mtl.Kd = Vertex().from_array(split)
+        elif first == 'Ks':
+            self.current_mtl.Ks = Vertex().from_array(split)
+        elif first == 'map_Kd':
+            self.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[0]))
+
+
+    def parse_file(self, path):
+        with open(path) as f:
+            for line in f.readlines():
+                line = line.rstrip()
+                self.parse_line(line)
+
 
 class OBJExporter(Exporter):
     def __init__(self, model):
