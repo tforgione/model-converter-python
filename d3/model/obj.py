@@ -5,6 +5,7 @@ from .mesh import Material, MeshPart
 from functools import reduce
 import os.path
 import PIL.Image
+import sys
 
 
 def is_obj(filename):
@@ -15,6 +16,7 @@ class OBJParser(ModelParser):
     def __init__(self):
         super().__init__()
         self.current_material = None
+        self.mtl = None
 
     def parse_line(self, string):
         if string == '':
@@ -24,12 +26,15 @@ class OBJParser(ModelParser):
         first = split[0]
         split = split[1:]
 
-        if first == 'usemtl':
+        if first == 'usemtl' and self.mtl is not None:
             self.current_material = self.mtl[split[0]]
         elif first == 'mtllib':
             path = os.path.join(os.path.dirname(self.path), split[0])
-            self.mtl = MTLParser(self)
-            self.mtl.parse_file(path)
+            if os.path.isfile(path):
+                self.mtl = MTLParser(self)
+                self.mtl.parse_file(path)
+            else:
+                print('Warning : ' + path + 'not found ', file=sys.stderr)
         elif first == 'v':
             self.add_vertex(Vertex().from_array(split))
         elif first == 'vn':
