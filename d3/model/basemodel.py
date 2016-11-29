@@ -9,18 +9,18 @@ Normal = Vertex
 TexCoord = Vertex
 
 class FaceVertex:
-    def __init__(self, vertex = None, texture = None, normal = None):
+    def __init__(self, vertex = None, tex_coord = None, normal = None):
         self.vertex = vertex
-        self.texture = texture
+        self.tex_coord = tex_coord
         self.normal = normal
 
     def from_array(self, arr):
         self.vertex  = int(arr[0]) if len(arr) > 0 else None
 
         try:
-            self.texture = int(arr[1]) if len(arr) > 1 else None
+            self.tex_coord = int(arr[1]) if len(arr) > 1 else None
         except:
-            self.texture = None
+            self.tex_coord = None
 
         try:
             self.normal  = int(arr[2]) if len(arr) > 2 else None
@@ -30,11 +30,11 @@ class FaceVertex:
         return self
 
 class Face:
-    def __init__(self, a = None, b = None, c = None, mtl = None):
+    def __init__(self, a = None, b = None, c = None, material = None):
         self.a = a
         self.b = b
         self.c = c
-        self.mtl = mtl
+        self.material = material
 
     # Expects array of array
     def from_array(self, arr):
@@ -88,12 +88,6 @@ class ModelParser:
             for line in f.readlines():
                 line = line.rstrip()
                 self.parse_line(line)
-
-        for material in self.mtl.materials:
-            print(material.name)
-            print('\tKa ' + str(material.Ka))
-            print('\tKd ' + str(material.Kd))
-            print('\tKs ' + str(material.Ks))
 
     def draw(self):
 
@@ -158,6 +152,7 @@ class ModelParser:
         # Build VBO
         v = []
         n = []
+        t = []
 
         for face in self.faces:
             v1 = self.vertices[face.a.vertex]
@@ -171,8 +166,15 @@ class ModelParser:
                 n3 = self.normals[face.c.normal]
                 n += [[n1.x, n1.y, n1.z], [n2.x, n2.y, n2.z], [n3.x, n3.y, n3.z]]
 
-        self.vertex_vbo = vbo.VBO(array(v, 'f'))
-        self.normal_vbo = vbo.VBO(array(n, 'f'))
+            if face.a.tex_coord is not None:
+                t1 = self.tex_coords[face.a.tex_coord]
+                t2 = self.tex_coords[face.b.tex_coord]
+                t3 = self.tex_coords[face.c.tex_coord]
+                t += [[t1.x, t1.y], [t2.x, t2.y], [t3.x, t3.y]]
+
+        self.vertex_vbo  = vbo.VBO(array(v, 'f'))
+        self.normal_vbo  = vbo.VBO(array(n, 'f'))
+        self.texture_vbo = vbo.VBO(array(t, 'f'))
 
     def generate_vertex_normals(self):
         self.normals = [Normal() for i in self.vertices]

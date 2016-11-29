@@ -13,7 +13,7 @@ class OBJParser(ModelParser):
 
     def __init__(self):
         super().__init__()
-        self.mtl = None
+        self.current_material = None
 
     def parse_line(self, string):
         if string == '':
@@ -24,7 +24,7 @@ class OBJParser(ModelParser):
         split = split[1:]
 
         if first == 'usemtl':
-            self.currentMaterial = split[0]
+            self.current_material = split[0]
         elif first == 'mtllib':
             path = os.path.join(os.path.dirname(self.path), split[0])
             self.mtl = MTLParser(self)
@@ -43,7 +43,9 @@ class OBJParser(ModelParser):
                     if splits[i][j] is not '':
                         splits[i][j] = int(splits[i][j]) - 1
 
-            self.add_face(Face().from_array(splits))
+            face = Face().from_array(splits)
+            face.material = self.current_material
+            self.add_face(face)
 
 class MTLParser:
 
