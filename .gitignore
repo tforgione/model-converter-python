@@ -90,4 +90,4 @@ ENV/
 .ropeproject
 
 # Models
-examples
+assets/models
