@@ -43,9 +43,10 @@ def main(args):
     running = True
 
     model = load_model(args.input)
+    model.init_textures()
     model.generate_vbos()
 
-    shader = DefaultShader()
+    # shader = DefaultShader()
 
     while running:
         for event in pg.event.get():
@@ -72,9 +73,9 @@ def main(args):
 
         gl.glPushMatrix()
         controls.apply()
-        shader.bind()
+        # shader.bind()
         model.draw()
-        shader.unbind()
+        # shader.unbind()
         gl.glPopMatrix()
 
         gl.glFlush()

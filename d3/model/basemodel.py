@@ -4,6 +4,8 @@ from math import sqrt
 
 from ..geometry import Vector
 
+from .mesh import Material, MeshPart
+
 Vertex = Vector
 Normal = Vertex
 TexCoord = Vertex
@@ -43,28 +45,24 @@ class Face:
         self.c = FaceVertex().from_array(arr[2])
         return self
 
-class Material:
-    def __init__(self, name):
-        self.name = name
-        self.Ka = None
-        self.Kd = None
-        self.Ks = None
-        self.map_Kd = None
-
-
 class ModelParser:
 
     def __init__(self):
         self.vertices = []
         self.normals = []
         self.tex_coords = []
-        self.faces = []
+        self.parts = []
+        self.current_part = None
         self.bounding_box = BoundingBox()
         self.center_and_scale = True
         self.vertex_vbo = None
         self.tex_coord_vbo = None
         self.normal_vbo = None
         self.path = None
+
+    def init_textures(self):
+        for part in self.parts:
+            part.init_texture()
 
     def add_vertex(self, vertex):
         self.vertices.append(vertex)
@@ -77,7 +75,12 @@ class ModelParser:
         self.normals.append(normal)
 
     def add_face(self, face):
-        self.faces.append(face)
+        if self.current_part is None or face.material != self.current_part.material:
+            self.current_part = MeshPart(self)
+            self.current_part.material = face.material
+            self.parts.append(self.current_part)
+
+        self.current_part.add_face(face)
 
     def parse_line(self, string):
         pass
@@ -90,10 +93,7 @@ class ModelParser:
                 self.parse_line(line)
 
     def draw(self):
-
         import OpenGL.GL as gl
-
-        gl.glColor3f(1.0,0.0,0.0)
 
         if self.center_and_scale:
             center = self.bounding_box.get_center()
@@ -102,104 +102,43 @@ class ModelParser:
             gl.glScalef(1/scale, 1/scale, 1/scale)
             gl.glTranslatef(-center.x, -center.y, -center.z)
 
-        if self.vertex_vbo is not None:
-
-            self.vertex_vbo.bind()
-            gl.glEnableClientState(gl.GL_VERTEX_ARRAY);
-            gl.glVertexPointerf(self.vertex_vbo)
-            self.vertex_vbo.unbind()
-
-            self.normal_vbo.bind()
-            gl.glEnableClientState(gl.GL_NORMAL_ARRAY);
-            gl.glNormalPointerf(self.normal_vbo)
-            self.normal_vbo.unbind()
-
-            gl.glDrawArrays(gl.GL_TRIANGLES, 0, len(self.vertex_vbo.data) * 9)
-
-        else:
-
-            gl.glBegin(gl.GL_TRIANGLES)
-            for face in self.faces:
-                v1 = self.vertices[face.a.vertex]
-                v2 = self.vertices[face.b.vertex]
-                v3 = self.vertices[face.c.vertex]
-
-                if face.a.normal is not None:
-                    n1 = self.normals[face.a.normal]
-                    n2 = self.normals[face.b.normal]
-                    n3 = self.normals[face.c.normal]
-
-                if face.a.normal is not None:
-                    gl.glNormal3f(n1.x, n1.y, n1.z)
-                gl.glVertex3f(v1.x, v1.y, v1.z)
-
-                if face.b.normal is not None:
-                    gl.glNormal3f(n2.x, n2.y, n2.z)
-                gl.glVertex3f(v2.x, v2.y, v2.z)
-
-                if face.c.normal is not None:
-                    gl.glNormal3f(n3.x, n3.y, n3.z)
-                gl.glVertex3f(v3.x, v3.y, v3.z)
-
-            gl.glEnd()
+        for part in self.parts:
+            part.draw()
 
         if self.center_and_scale:
             gl.glPopMatrix()
 
     def generate_vbos(self):
-        from OpenGL.arrays import vbo
-        from numpy import array
-        # Build VBO
-        v = []
-        n = []
-        t = []
-
-        for face in self.faces:
-            v1 = self.vertices[face.a.vertex]
-            v2 = self.vertices[face.b.vertex]
-            v3 = self.vertices[face.c.vertex]
-            v += [[v1.x, v1.y, v1.z], [v2.x, v2.y, v2.z], [v3.x, v3.y, v3.z]]
-
-            if face.a.normal is not None:
-                n1 = self.normals[face.a.normal]
-                n2 = self.normals[face.b.normal]
-                n3 = self.normals[face.c.normal]
-                n += [[n1.x, n1.y, n1.z], [n2.x, n2.y, n2.z], [n3.x, n3.y, n3.z]]
-
-            if face.a.tex_coord is not None:
-                t1 = self.tex_coords[face.a.tex_coord]
-                t2 = self.tex_coords[face.b.tex_coord]
-                t3 = self.tex_coords[face.c.tex_coord]
-                t += [[t1.x, t1.y], [t2.x, t2.y], [t3.x, t3.y]]
-
-        self.vertex_vbo  = vbo.VBO(array(v, 'f'))
-        self.normal_vbo  = vbo.VBO(array(n, 'f'))
-        self.texture_vbo = vbo.VBO(array(t, 'f'))
+        for part in self.parts:
+            part.generate_vbos()
 
     def generate_vertex_normals(self):
+
         self.normals = [Normal() for i in self.vertices]
 
-        for face in self.faces:
-            v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
-            v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])
-            cross = Vertex.cross_product(v1, v2)
-            self.normals[face.a.vertex] += cross
-            self.normals[face.b.vertex] += cross
-            self.normals[face.c.vertex] += cross
+        for part in self.parts:
+            for face in part.faces:
+                v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
+                v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])
+                cross = Vertex.cross_product(v1, v2)
+                self.normals[face.a.vertex] += cross
+                self.normals[face.b.vertex] += cross
+                self.normals[face.c.vertex] += cross
 
         for normal in self.normals:
             normal.normalize()
 
-        for face in self.faces:
-            face.a.normal = face.a.vertex
-            face.b.normal = face.b.vertex
-            face.c.normal = face.c.vertex
+        for part in self.parts:
+            for face in part.faces:
+                face.a.normal = face.a.vertex
+                face.b.normal = face.b.vertex
+                face.c.normal = face.c.vertex
 
     def generate_face_normals(self):
 
-        self.normals = [Normal() for i in self.faces]
+        self.normals = [Normal() for i in sum(list(map(lambda x: len(x), self.faces)))]
 
-        for (index, face) in enumerate(self.faces):
+        for (index, face) in enumerate(sum(self.faces, [])):
 
             v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
             v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])
