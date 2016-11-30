@@ -2,6 +2,7 @@
 
 from .obj import is_obj, OBJParser, OBJExporter
 from .ply import is_ply, PLYParser, PLYExporter
+from .stl import is_stl, STLParser, STLExporter
 from .basemodel import ModelParser, Exporter
 
 def load_model(path):
@@ -11,6 +12,8 @@ def load_model(path):
         parser = OBJParser()
     elif is_ply(path):
         parser = PLYParser()
+    elif is_stl(path):
+        parser = STLParser()
     else:
         raise Exception("File format not supported")
 
@@ -25,6 +28,8 @@ def export_model(model, path):
         exporter = OBJExporter(model)
     elif is_ply(path):
         exporter = PLYExporter(model)
+    elif is_stl(path):
+        exporter = STLExporter(model)
     else:
         raise Exception("File format not supported")
 

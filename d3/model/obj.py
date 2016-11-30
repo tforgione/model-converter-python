@@ -122,7 +122,7 @@ class OBJExporter(Exporter):
         faces = sum(map(lambda x: x.faces, self.model.parts), [])
 
         for face in faces:
-            if face.material.name != current_material:
+            if face.material is not None and face.material.name != current_material:
                 current_material = face.material.name
                 string += "usemtl " + current_material + "\n"
             string += "f "

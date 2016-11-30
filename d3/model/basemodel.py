@@ -117,7 +117,7 @@ class ModelParser:
         If the face has a different material than the current material, it will
         create a new mesh part and update the current material.
         """
-        if self.current_part is None or face.material != self.current_part.material:
+        if self.current_part is None or (face.material != self.current_part.material and face.material is not None):
             self.current_part = MeshPart(self)
             self.current_part.material = face.material if face.material is not None else Material.DEFAULT_MATERIAL
             self.parts.append(self.current_part)
