@@ -7,8 +7,8 @@ def is_ply(filename):
 
 class PLYParser(ModelParser):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, up_conversion = None):
+        super().__init__(up_conversion)
         self.counter = 0
         self.elements = []
         self.inner_parser = PLYHeaderParser(self)

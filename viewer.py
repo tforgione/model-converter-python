@@ -22,6 +22,14 @@ WINDOW_HEIGHT = 768
 
 def main(args):
 
+    if (args.from_up is None) != (args.to_up is None):
+        raise Exception("from-up and to-up args should be both present or both absent")
+
+    up_conversion = None
+    if args.from_up is not None:
+        up_conversion = (args.from_up, args.to_up)
+
+
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = OrbitControls()
 
@@ -44,7 +52,7 @@ def main(args):
     running = True
 
     # Load and parse the model
-    model = load_model(args.input)
+    model = load_model(args.input, up_conversion)
 
     # Initializes OpenGL textures
     model.init_textures()
@@ -99,5 +107,10 @@ if __name__ == '__main__':
     parser.set_defaults(func=main)
     parser.add_argument('-v', '--version', action='version', version='1.0')
     parser.add_argument('-i', '--input', metavar='input', default=None, help='Input model')
+    parser.add_argument('-fu', '--from-up', metavar='fup', default=None,
+                        help="Initial up vector")
+    parser.add_argument('-tu', '--to-up', metavar='fup', default=None,
+                        help="Output up vector")
+
     args = parser.parse_args()
     args.func(args)

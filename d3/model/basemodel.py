@@ -70,9 +70,11 @@ class Face:
 class ModelParser:
     """Represents a 3D model
     """
-    def __init__(self):
+    def __init__(self, up_conversion = None):
         """Initializes the model
         """
+        self.up_conversion = up_conversion
+        print(up_conversion)
         self.vertices = []
         self.normals = []
         self.tex_coords = []
@@ -98,8 +100,16 @@ class ModelParser:
 
         Will also update its bounding box
         """
-        self.vertices.append(vertex)
-        self.bounding_box.add(vertex)
+        # Apply up_conversion to the vertex
+        new_vertex = vertex
+        if self.up_conversion is not None:
+            if self.up_conversion[0] == 'y' and self.up_conversion[1] == 'z':
+                new_vertex = Vector(vertex.y, vertex.z, vertex.x)
+            elif self.up_conversion[0] == 'z' and self.up_conversion[1] == 'y':
+                new_vertex = Vector(vertex.z, vertex.x, vertex.y)
+
+        self.vertices.append(new_vertex)
+        self.bounding_box.add(new_vertex)
 
     def add_tex_coord(self, tex_coord):
         """Adds a texture coordinate element to the current model

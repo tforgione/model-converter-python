@@ -10,8 +10,8 @@ def is_stl(filename):
 
 class STLParser(ModelParser):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, up_conversion = None):
+        super().__init__(up_conversion)
         self.parsing_solid = False
         self.parsing_face = False
         self.parsing_loop = False

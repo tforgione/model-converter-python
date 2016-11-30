@@ -13,8 +13,8 @@ def is_obj(filename):
 
 class OBJParser(ModelParser):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, up_conversion = None):
+        super().__init__(up_conversion)
         self.current_material = None
         self.mtl = None
 

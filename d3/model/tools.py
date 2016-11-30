@@ -5,15 +5,15 @@ from .ply import is_ply, PLYParser, PLYExporter
 from .stl import is_stl, STLParser, STLExporter
 from .basemodel import ModelParser, Exporter
 
-def load_model(path):
+def load_model(path, up_conversion = None):
     parser = None
 
     if is_obj(path):
-        parser = OBJParser()
+        parser = OBJParser(up_conversion)
     elif is_ply(path):
-        parser = PLYParser()
+        parser = PLYParser(up_conversion)
     elif is_stl(path):
-        parser = STLParser()
+        parser = STLParser(up_conversion)
     else:
         raise Exception("File format not supported")
 
@@ -35,8 +35,8 @@ def export_model(model, path):
 
     return exporter
 
-def convert(input, output):
-    model = load_model(input)
+def convert(input, output, up_conversion = None):
+    model = load_model(input, up_conversion)
     exporter = export_model(model, output)
     return str(exporter)
 
