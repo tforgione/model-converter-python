@@ -77,7 +77,7 @@ class ModelParser:
     def add_face(self, face):
         if self.current_part is None or face.material != self.current_part.material:
             self.current_part = MeshPart(self)
-            self.current_part.material = face.material
+            self.current_part.material = face.material if face.material is not None else Material.DEFAULT_MATERIAL
             self.parts.append(self.current_part)
 
         self.current_part.add_face(face)
@@ -136,9 +136,11 @@ class ModelParser:
 
     def generate_face_normals(self):
 
-        self.normals = [Normal() for i in sum(list(map(lambda x: len(x), self.faces)))]
+        # Build array of faces
+        faces = sum(map(lambda x: x.faces, self.parts), [])
+        self.normals = [Normal()] * len(faces)
 
-        for (index, face) in enumerate(sum(self.faces, [])):
+        for (index, face) in enumerate(faces):
 
             v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
             v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])

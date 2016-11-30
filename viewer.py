@@ -43,11 +43,20 @@ def main(args):
 
     running = True
 
+    # Load and parse the model
     model = load_model(args.input)
+
+    # Initializes OpenGL textures
     model.init_textures()
+
+    # Compute normals if not already computed
+    if len(model.normals) == 0:
+        model.generate_vertex_normals()
+
+    # Generate vbos for smooth rendering
     model.generate_vbos()
 
-    # shader = DefaultShader()
+    shader = DefaultShader()
 
     while running:
         for event in pg.event.get():
@@ -65,7 +74,6 @@ def main(args):
         # Update physics
         controls.update()
 
-
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
@@ -74,9 +82,9 @@ def main(args):
 
         gl.glPushMatrix()
         controls.apply()
-        # shader.bind()
+        shader.bind()
         model.draw()
-        # shader.unbind()
+        shader.unbind()
         gl.glPopMatrix()
 
         gl.glFlush()

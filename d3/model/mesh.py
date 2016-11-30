@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 class Material:
+
+
     def __init__(self, name):
         self.name = name
         self.Ka = None
@@ -48,6 +50,13 @@ class Material:
     def unbind(self):
         pass
 
+import PIL.Image
+
+Material.DEFAULT_MATERIAL=Material('')
+Material.DEFAULT_MATERIAL.Ka = 1.0
+Material.DEFAULT_MATERIAL.Kd = 0.0
+Material.DEFAULT_MATERIAL.Ks = 0.0
+Material.DEFAULT_MATERIAL.map_Kd = PIL.Image.new("RGBA", (1,1), "white")
 
 class MeshPart:
     def __init__(self, parent):
