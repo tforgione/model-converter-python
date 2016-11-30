@@ -99,6 +99,7 @@ class OBJExporter(Exporter):
         super().__init__(model)
 
     def __str__(self):
+        current_material = ''
         string = ""
 
         for vertex in self.model.vertices:
@@ -118,18 +119,23 @@ class OBJExporter(Exporter):
 
             string += "\n"
 
-        for face in self.model.faces:
+        faces = sum(map(lambda x: x.faces, self.model.parts), [])
+
+        for face in faces:
+            if face.material.name != current_material:
+                current_material = face.material.name
+                string += "usemtl " + current_material + "\n"
             string += "f "
             arr = []
             for v in [face.a, face.b, face.c]:
                 sub_arr = []
                 sub_arr.append(str(v.vertex + 1))
                 if v.normal is None:
-                    if v.texture is not None:
+                    if v.tex_coord is not None:
                         sub_arr.append('')
-                        sub_arr.append(str(v.texture + 1))
-                elif v.texture is not None:
-                    sub_arr.append(str(v.texture + 1))
+                        sub_arr.append(str(v.tex_coord + 1))
+                elif v.tex_coord is not None:
+                    sub_arr.append(str(v.tex_coord + 1))
                     if v.normal is not None:
                         sub_arr.append(str(v.normal + 1))
                 arr.append('/'.join(sub_arr))
