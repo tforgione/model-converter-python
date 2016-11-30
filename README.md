@@ -3,6 +3,8 @@
 This project aims to be a simple, lightweight, and useful 3D model editor.
 For the moment, only `obj` and `ply` ascii models are supported.
 
+Feel free to open an issue if you find anything wrong in this.
+
 # Scripts
 
 A few utilities to manage 3D models :
