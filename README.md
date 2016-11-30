@@ -11,7 +11,8 @@ A few utilities to manage 3D models :
   - `convert.py` that converts any type of model to any other
   - `viewer.py` which is a simple script that renders a 3d model
 
-## Supported format
+## Supported formats
   - Wavefront `.obj`
   - Stanford `.ply`
+  - STL files `.stl`
 
