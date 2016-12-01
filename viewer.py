@@ -6,16 +6,32 @@ import argparse
 import os
 import math
 
-import pygame as pg
-import pygame.locals as pgl
-import OpenGL.GL as gl
-import OpenGL.GLU as glu
-
 from d3.model.tools import load_model
 from d3.geometry import Vector
 from d3.controls import TrackBallControls, OrbitControls
 from d3.camera import Camera
 from d3.shader import DefaultShader
+
+# Test dependencies
+try:
+    import pygame as pg
+    import pygame.locals as pgl
+except:
+    print('You need to install pygame', file=sys.stderr)
+    sys.exit(-1)
+
+try:
+    import OpenGL.GL as gl
+    import OpenGL.GLU as glu
+except:
+    print('You need to install pyopengl', file=sys.stderr)
+    sys.exit(-1)
+
+try:
+    import numpy
+except:
+    print('You need to install numpy', file=sys.stderr)
+    sys.exit(-1)
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 1024
@@ -46,8 +62,7 @@ def main(args):
     controls = OrbitControls()
 
     pg.init()
-    display = (WINDOW_WIDTH, WINDOW_HEIGHT)
-    pg.display.set_mode(display, pgl.DOUBLEBUF | pgl.OPENGL | pgl.RESIZABLE)
+    pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pgl.DOUBLEBUF | pgl.OPENGL | pgl.RESIZABLE)
     pg.display.set_caption('Model-Converter')
 
     # OpenGL init
@@ -67,19 +82,25 @@ def main(args):
     running = True
 
     # Load and parse the model
+    print('Loading model...', file=sys.stderr, end='')
     model = load_model(args.input, up_conversion)
 
+    print(' done!\nInitializing OpenGL textures...', file=sys.stderr, end='')
     # Initializes OpenGL textures
     model.init_textures()
 
     # Compute normals if not already computed
     if len(model.normals) == 0:
+        print(' done!\nComputing normals...', file=sys.stderr, end='')
         model.generate_vertex_normals()
 
     # Generate vbos for smooth rendering
+    print(' done!\nGenerating vbos...', file=sys.stderr, end='')
     model.generate_vbos()
 
     shader = DefaultShader()
+
+    print(' Done!\nReady!', file=sys.stderr)
 
     while running:
         for event in pg.event.get():
@@ -136,6 +157,7 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=main)
     parser.add_argument('-v', '--version', action='version', version='1.0')
