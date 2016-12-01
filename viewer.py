@@ -21,10 +21,11 @@ WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 1024
 
 def resize(width, height):
-    print((width, height))
-
     length = min(width, height)
     offset = int( math.fabs(width - height) / 2)
+
+    # Ugly AF
+    pg.display.set_mode((width, height), pg.DOUBLEBUF | pg.RESIZABLE | pg.OPENGL)
 
     if width < height:
         gl.glViewport(0, offset, length, length)
