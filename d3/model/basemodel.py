@@ -74,7 +74,6 @@ class ModelParser:
         """Initializes the model
         """
         self.up_conversion = up_conversion
-        print(up_conversion)
         self.vertices = []
         self.normals = []
         self.tex_coords = []

@@ -58,10 +58,20 @@ class OrbitControls(Controls):
         super().__init__()
         self.phi = 0
         self.theta = 0
+        self.scale = 1
 
     def apply(self):
+        gl.glScalef(self.scale, self.scale, self.scale)
         gl.glRotatef(self.theta * 180 / math.pi, 1.0, 0.0, 0.0)
         gl.glRotatef(self.phi * 180 / math.pi, 0.0, 1.0, 0.0)
+
+    def apply_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Wheel up
+            if event.button == 4:
+                self.scale += 0.2
+            elif event.button == 5:
+                self.scale -= 2
 
     def update(self, time = 10):
 

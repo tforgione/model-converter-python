@@ -18,7 +18,18 @@ from d3.camera import Camera
 from d3.shader import DefaultShader
 
 WINDOW_WIDTH = 1024
-WINDOW_HEIGHT = 768
+WINDOW_HEIGHT = 1024
+
+def resize(width, height):
+    print((width, height))
+
+    length = min(width, height)
+    offset = int( math.fabs(width - height) / 2)
+
+    if width < height:
+        gl.glViewport(0, offset, length, length)
+    else:
+        gl.glViewport(offset, 0, length, length)
 
 def main(args):
 
@@ -35,10 +46,13 @@ def main(args):
 
     pg.init()
     display = (WINDOW_WIDTH, WINDOW_HEIGHT)
-    pg.display.set_mode(display, pgl.DOUBLEBUF | pgl.OPENGL)
+    pg.display.set_mode(display, pgl.DOUBLEBUF | pgl.OPENGL | pgl.RESIZABLE)
     pg.display.set_caption('Model-Converter')
 
     # OpenGL init
+    gl.glMatrixMode(gl.GL_MODELVIEW)
+    gl.glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+
     gl.glMatrixMode(gl.GL_PROJECTION)
     gl.glLoadIdentity()
     glu.gluPerspective(45, (WINDOW_WIDTH / WINDOW_HEIGHT), 0.1, 50.0)
@@ -68,6 +82,9 @@ def main(args):
 
     while running:
         for event in pg.event.get():
+
+            controls.apply_event(event)
+
             if event.type == pg.QUIT:
                 pg.quit()
                 quit()
@@ -78,6 +95,8 @@ def main(args):
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     pg.mouse.get_rel()
+            elif event.type == pg.VIDEORESIZE:
+                resize(event.size[0], event.size[1])
 
         # Update physics
         controls.update()
@@ -90,6 +109,19 @@ def main(args):
 
         gl.glPushMatrix()
         controls.apply()
+
+        gl.glBegin(gl.GL_LINES)
+        gl.glColor3f (1.0,0.0,0.0)
+        gl.glVertex3f(0.0,0.0,0.0)
+        gl.glVertex3f(2.0,0.0,0.0)
+        gl.glColor3f (0.0,1.0,0.0)
+        gl.glVertex3f(0.0,0.0,0.0)
+        gl.glVertex3f(0.0,2.0,0.0)
+        gl.glColor3f (0.0,0.0,1.0)
+        gl.glVertex3f(0.0,0.0,0.0)
+        gl.glVertex3f(0.0,0.0,2.0)
+        gl.glEnd()
+
         shader.bind()
         model.draw()
         shader.unbind()

@@ -48,7 +48,9 @@ class Material:
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
 
     def unbind(self):
-        pass
+        from OpenGL import GL as gl
+
+        gl.glDisable(gl.GL_TEXTURE_2D)
 
 import PIL.Image
 
@@ -150,33 +152,11 @@ class MeshPart:
 
         gl.glDrawArrays(gl.GL_TRIANGLES, 0, len(self.vertex_vbo.data) * 9)
 
+        gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glDisableClientState(gl.GL_NORMAL_ARRAY)
+        gl.glDisableClientState(gl.GL_TEXTURE_COORD_ARRAY)
+
+
     def draw_from_arrays(self):
         pass
-
-class Mesh:
-    def __init__(self):
-        self.vertices = []
-        self.tex_coords = []
-        self.normals = []
-        self.parts = []
-        self.current_material = None
-        self.current_part = None
-
-    def draw(self):
-        for part in self.parts:
-            part.draw()
-
-    def add_face(self, face):
-        if self.current_part is None or face.material != self.current_part.material:
-            self.current_part = MeshPart(self)
-            self.current_part.material = face.material
-            self.parts.append(self.current_part)
-
-        self.current_part.add_face(face)
-
-    def generate_vbos(self):
-        for part in self.parts:
-            part.generate_vbos()
-
-
 
