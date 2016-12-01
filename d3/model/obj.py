@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
 from .mesh import Material, MeshPart
 from functools import reduce

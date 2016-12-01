@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from .obj import is_obj, OBJParser, OBJExporter
 from .ply import is_ply, PLYParser, PLYExporter
 from .stl import is_stl, STLParser, STLExporter

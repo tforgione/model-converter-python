@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from .basemodel import ModelParser, Exporter, Vertex, FaceVertex, Face
 from .mesh import MeshPart
 

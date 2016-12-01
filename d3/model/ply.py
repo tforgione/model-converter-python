@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from .basemodel import ModelParser, Exporter, Vertex, Face, FaceVertex
 
 def is_ply(filename):

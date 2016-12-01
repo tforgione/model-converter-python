@@ -1,9 +1,5 @@
-#!/usr/bin/env python3
-
 from math import sqrt
-
 from ..geometry import Vector
-
 from .mesh import Material, MeshPart
 
 Vertex = Vector
