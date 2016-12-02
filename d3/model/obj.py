@@ -47,9 +47,21 @@ class OBJParser(ModelParser):
                     if splits[i][j] is not '':
                         splits[i][j] = int(splits[i][j]) - 1
 
-            face = Face().from_array(splits)
-            face.material = self.current_material
-            self.add_face(face)
+            # if Face3
+            if len(split) == 3:
+                face = Face().from_array(splits)
+                face.material = self.current_material
+                self.add_face(face)
+            elif len(split) == 4:
+                face = Face().form_array(splits[:3])
+                face.material = self.current_material
+                self.add_face(face)
+
+                face = Face().from_array([splits[0], splits[2], splits[3]])
+                face.material = self.current_material
+                self.add_face(face)
+            else:
+                print('Face with more than 4 vertices are not supported', file=sys.stderr)
 
 class MTLParser:
 
