@@ -1,7 +1,7 @@
 # model-converter
 
 This project aims to be a simple, lightweight, and useful 3D model editor.
-For the moment, only `obj`, `ply` ascii models are supported.
+For the moment, only `obj`, `ply` ascii and `stl` models are supported.
 
 Feel free to open an issue if you find anything wrong in this.
 
