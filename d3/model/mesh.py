@@ -50,13 +50,16 @@ class Material:
 
         gl.glDisable(gl.GL_TEXTURE_2D)
 
-import PIL.Image
-
 Material.DEFAULT_MATERIAL=Material('')
 Material.DEFAULT_MATERIAL.Ka = 1.0
 Material.DEFAULT_MATERIAL.Kd = 0.0
 Material.DEFAULT_MATERIAL.Ks = 0.0
-Material.DEFAULT_MATERIAL.map_Kd = PIL.Image.new("RGBA", (1,1), "white")
+
+try:
+    import PIL.Image
+    Material.DEFAULT_MATERIAL.map_Kd = PIL.Image.new("RGBA", (1,1), "white")
+except:
+    pass
 
 class MeshPart:
     def __init__(self, parent):

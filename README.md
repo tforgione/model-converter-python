@@ -24,6 +24,7 @@ dependencies, you'll need :
 
   - pip (to install the other dependencies) `sudo apt-get install python3-pip`
     for example
+  - PIL `sudo pip install pillow`
   - numpy `sudo pip install numpy`
   - pygame `sudo pip install pygame`
   - PyOpenGL `sudo pip install pyopengl`

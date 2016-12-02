@@ -2,7 +2,6 @@ from ..basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVer
 from ..mesh import Material, MeshPart
 from functools import reduce
 import os.path
-import PIL.Image
 import sys
 
 
@@ -89,7 +88,11 @@ class MTLParser:
         elif first == 'Ks':
             self.current_mtl.Ks = Vertex().from_array(split)
         elif first == 'map_Kd':
-            self.current_mtl.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[0]))
+            try:
+                import PIL.Image
+                self.current_mtl.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[0]))
+            except:
+                pass
 
 
     def parse_file(self, path):
