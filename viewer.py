@@ -57,6 +57,12 @@ def main(args):
     if args.from_up is not None:
         up_conversion = (args.from_up, args.to_up)
 
+    if args.verbose:
+        def log(*args, **kwargs):
+            print(*args, **kwargs)
+    else:
+        def log(*args, **kwargs):
+            pass
 
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = OrbitControls()
@@ -82,25 +88,25 @@ def main(args):
     running = True
 
     # Load and parse the model
-    print('Loading model...', file=sys.stderr, end='')
+    log('Loading model...', file=sys.stderr, end='')
     model = load_model(args.input, up_conversion)
 
-    print(' done!\nInitializing OpenGL textures...', file=sys.stderr, end='')
+    log(' done!\nInitializing OpenGL textures...', file=sys.stderr, end='')
     # Initializes OpenGL textures
     model.init_textures()
 
     # Compute normals if not already computed
     if len(model.normals) == 0:
-        print(' done!\nComputing normals...', file=sys.stderr, end='')
+        log(' done!\nComputing normals...', file=sys.stderr, end='')
         model.generate_vertex_normals()
 
     # Generate vbos for smooth rendering
-    print(' done!\nGenerating vbos...', file=sys.stderr, end='')
+    log(' done!\nGenerating vbos...', file=sys.stderr, end='')
     model.generate_vbos()
 
     shader = DefaultShader()
 
-    print(' Done!\nReady!', file=sys.stderr)
+    log(' Done!\nReady!', file=sys.stderr)
 
     while running:
         for event in pg.event.get():
@@ -166,6 +172,8 @@ if __name__ == '__main__':
                         help="Initial up vector")
     parser.add_argument('-tu', '--to-up', metavar='fup', default=None,
                         help="Output up vector")
+    parser.add_argument('-V', '--verbose', default=False, action='store_true',
+                        help="Verbose output")
 
     args = parser.parse_args()
     args.func(args)
