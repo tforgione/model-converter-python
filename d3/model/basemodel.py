@@ -42,6 +42,10 @@ class FaceVertex:
 
 class Face:
     """Represents a face with 3 vertices
+
+    Faces with more than 3 vertices are not supported in this class. You should
+    split your face first and then create the number needed of instances of
+    this class.
     """
     def __init__(self, a = None, b = None, c = None, material = None):
         """Initializes a Face with its three FaceVertex and its Material
