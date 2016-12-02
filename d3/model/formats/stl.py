@@ -1,5 +1,5 @@
-from .basemodel import ModelParser, Exporter, Vertex, FaceVertex, Face
-from .mesh import MeshPart
+from ..basemodel import ModelParser, Exporter, Vertex, FaceVertex, Face
+from ..mesh import MeshPart
 
 import os.path
 

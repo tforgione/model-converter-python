@@ -1,4 +1,4 @@
-from .basemodel import ModelParser, Exporter, Vertex, Face, FaceVertex
+from ..basemodel import ModelParser, Exporter, Vertex, Face, FaceVertex
 
 def is_ply(filename):
     return filename[-4:] == '.ply'

@@ -1,5 +1,5 @@
-from .basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
-from .mesh import Material, MeshPart
+from ..basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
+from ..mesh import Material, MeshPart
 from functools import reduce
 import os.path
 import PIL.Image
