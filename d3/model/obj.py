@@ -53,7 +53,7 @@ class OBJParser(ModelParser):
                 face.material = self.current_material
                 self.add_face(face)
             elif len(split) == 4:
-                face = Face().form_array(splits[:3])
+                face = Face().from_array(splits[:3])
                 face.material = self.current_material
                 self.add_face(face)
 

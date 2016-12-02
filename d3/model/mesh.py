@@ -23,7 +23,7 @@ class Material:
 
         try:
             ix, iy, image = self.map_Kd.size[0], self.map_Kd.size[1], self.map_Kd.tobytes("raw", "RGBA", 0, -1)
-        except SystemError:
+        except:
             ix, iy, image = self.map_Kd.size[0], self.map_Kd.size[1], self.map_Kd.tobytes("raw", "RGBX", 0, -1)
 
         self.id = gl.glGenTextures(1)
