@@ -93,7 +93,8 @@ class ModelParser:
     def add_vertex(self, vertex):
         """Adds a vertex to the current model
 
-        Will also update its bounding box
+        Will also update its bounding box, and convert the up vector if
+        up_conversion was specified.
         """
         # Apply up_conversion to the vertex
         new_vertex = vertex
