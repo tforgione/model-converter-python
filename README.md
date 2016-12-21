@@ -1,7 +1,7 @@
 # model-converter
 
 This project aims to be a simple, lightweight, and useful 3D model editor.
-For the moment, only `obj`, `ply` ascii and `stl` models are supported.
+For the moment, only `obj`, `off`, `ply` ascii and `stl` models are supported.
 
 Feel free to open an issue if you find anything wrong in this.
 
@@ -51,5 +51,6 @@ It should have a constructor that takes a `ModelParser` has parameter and a
 Here is the list of all the supported formats
   - Wavefront `.obj`
   - Stanford `.ply`
+  - Object File Format `.off`
   - STL files `.stl`
 
