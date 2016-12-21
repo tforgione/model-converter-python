@@ -6,13 +6,13 @@ import argparse
 import os
 import math
 
-from d3.model.tools import load_model
-from d3.geometry import Vector
-from d3.controls import TrackBallControls, OrbitControls
-from d3.camera import Camera
-from d3.shader import DefaultShader
-
 # Test dependencies
+try:
+    import PIL
+except:
+    print('You need to install PIL', file=sys.stderr)
+    sys.exit(-1)
+
 try:
     import pygame as pg
     import pygame.locals as pgl
@@ -32,6 +32,12 @@ try:
 except:
     print('You need to install numpy', file=sys.stderr)
     sys.exit(-1)
+
+from d3.model.tools import load_model
+from d3.geometry import Vector
+from d3.controls import TrackBallControls, OrbitControls
+from d3.camera import Camera
+from d3.shader import DefaultShader
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 1024
