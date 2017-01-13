@@ -34,7 +34,7 @@ class PLYHeaderParser:
             self.parent.elements.append(self.current_element)
 
         elif split[0] == 'property':
-            self.current_element.add_property(split[2], split[1])
+            self.current_element.add_property(split[-1], (split[1:][:-1]))
 
         elif split[0] == 'end_header':
             self.parent.inner_parser = PLYContentParser(self.parent)
@@ -48,6 +48,13 @@ class PLYElement:
 
     def add_property(self, name, type):
         self.properties.append((name, type))
+
+class PLYVertex(Vertex):
+    def __init__(self, string):
+        pass
+
+    def add_to_parser(self, parser):
+        pass
 
 class PLYContentParser:
     def __init__(self, parent):
@@ -63,7 +70,16 @@ class PLYContentParser:
         if self.current_element.name == 'vertex':
             self.parent.add_vertex(Vertex().from_array(split))
         elif self.current_element.name == 'face':
-            self.parent.add_face(Face(FaceVertex(int(split[1])), FaceVertex(int(split[2])), FaceVertex(int(split[3]))))
+
+            faceVertexArray = []
+
+            # Analyse element
+            for property in self.current_element.properties:
+                if property[0] == 'vertex_indices':
+                    for i in range(int(split[0])):
+                        faceVertexArray.append(FaceVertex(int(split[i+1])))
+
+            self.parent.add_face(Face(*faceVertexArray))
 
         self.counter += 1
 

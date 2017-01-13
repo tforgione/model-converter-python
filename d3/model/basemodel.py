@@ -148,7 +148,8 @@ class ModelParser:
         with open(path) as f:
             for line in f.readlines():
                 line = line.rstrip()
-                self.parse_line(line)
+                if line != '':
+                    self.parse_line(line)
 
     def draw(self):
         """Draws each part of the model with OpenGL
