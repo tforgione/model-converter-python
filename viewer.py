@@ -70,6 +70,11 @@ def main(args):
         def log(*args, **kwargs):
             pass
 
+    # Load and parse the model
+    log('Loading model...', file=sys.stderr, end='')
+    model = load_model(args.input, up_conversion)
+    log(' done!\,Initialiazing OpenGL Context', file=sys.stderr, end='')
+
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = OrbitControls()
 
@@ -93,9 +98,6 @@ def main(args):
 
     running = True
 
-    # Load and parse the model
-    log('Loading model...', file=sys.stderr, end='')
-    model = load_model(args.input, up_conversion)
 
     log(' done!\nInitializing OpenGL textures...', file=sys.stderr, end='')
     # Initializes OpenGL textures
