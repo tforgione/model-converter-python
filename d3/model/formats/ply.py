@@ -1,4 +1,6 @@
-from ..basemodel import ModelParser, Exporter, Vertex, Face, FaceVertex
+import os
+import PIL
+from ..basemodel import ModelParser, Exporter, Vertex, Face, FaceVertex, TexCoord, Material
 
 def is_ply(filename):
     return filename[-4:] == '.ply'
@@ -9,6 +11,7 @@ class PLYParser(ModelParser):
         super().__init__(up_conversion)
         self.counter = 0
         self.elements = []
+        self.materials = []
         self.inner_parser = PLYHeaderParser(self)
 
     def parse_line(self, string):
@@ -38,6 +41,16 @@ class PLYHeaderParser:
 
         elif split[0] == 'end_header':
             self.parent.inner_parser = PLYContentParser(self.parent)
+
+        elif split[0] == 'comment' and split[1] == 'TextureFile':
+            material = Material('mat' + str(len(self.parent.materials)))
+            self.parent.materials.append(material)
+
+            try:
+                material.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[2]))
+            except:
+                pass
+
 
 
 class PLYElement:
@@ -72,14 +85,29 @@ class PLYContentParser:
         elif self.current_element.name == 'face':
 
             faceVertexArray = []
+            current_material = None
 
             # Analyse element
+            offset = 0
             for property in self.current_element.properties:
                 if property[0] == 'vertex_indices':
-                    for i in range(int(split[0])):
-                        faceVertexArray.append(FaceVertex(int(split[i+1])))
+                    for i in range(int(split[offset])):
+                        faceVertexArray.append(FaceVertex(int(split[i+offset+1])))
+                    offset += int(split[0]) + 1
+                elif property[0] == 'texcoord':
+                    offset += 1
+                    for i in range(3):
+                        # Create corresponding tex_coords
+                        tex_coord = TexCoord().from_array(split[offset:offset+2])
+                        offset += 2
+                        self.parent.add_tex_coord(tex_coord)
+                        faceVertexArray[i].tex_coord = len(self.parent.tex_coords) - 1
+                elif property[0] == 'texnumber':
+                    current_material = self.parent.materials[int(split[offset])]
 
-            self.parent.add_face(Face(*faceVertexArray))
+            face = Face(*faceVertexArray)
+            face.material = current_material
+            self.parent.add_face(face)
 
         self.counter += 1
 
