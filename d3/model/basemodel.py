@@ -134,8 +134,18 @@ class ModelParser:
 
         self.current_part.add_face(face)
 
-    def parse_bytes(self, bytes):
-        pass
+    def parse_file(self, path, chunk_size = 512):
+        """Sets the path of the model and parse bytes by chunk
+        """
+        self.path = path
+        byte_counter = 0
+        with open(path, 'rb') as f:
+            while True:
+                bytes = f.read(chunk_size)
+                if bytes == b'':
+                    return
+                self.parse_bytes(bytes, byte_counter)
+                byte_counter += chunk_size
 
     def draw(self):
         """Draws each part of the model with OpenGL
