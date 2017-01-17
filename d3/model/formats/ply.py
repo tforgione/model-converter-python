@@ -294,21 +294,39 @@ class PLYLittleEndianContentParser:
 
             elif self.current_element.name == 'face':
 
-                # Create texture coords
-                for i in range(0,6,2):
-                    tex_coord = TexCoord(*property_values[1][i:i+2])
-                    self.parent.add_tex_coord(tex_coord)
+                vertex_indices = []
+                tex_coords = []
+                material = None
 
-                face = Face(\
-                    FaceVertex(property_values[0][0], len(self.parent.tex_coords)-3), \
-                    FaceVertex(property_values[0][1], len(self.parent.tex_coords)-2), \
-                    FaceVertex(property_values[0][2], len(self.parent.tex_coords)-1))
+                for (i, property) in enumerate(self.current_element.properties):
 
-                face.material = self.parent.materials[property_values[2]]
+                    if property[0] == 'vertex_indices':
+                        vertex_indices.append(property_values[i][0])
+                        vertex_indices.append(property_values[i][1])
+                        vertex_indices.append(property_values[i][2])
+
+                    elif property[0] == 'texcoord':
+                        # Create texture coords
+                        for j in range(0,6,2):
+                            tex_coord = TexCoord(*property_values[i][j:j+2])
+                            tex_coords.append(tex_coord)
+
+                    elif property[0] == 'texnumber':
+                        material = self.parent.materials[property_values[i]]
+
+                    for tex_coord in tex_coords:
+                        self.parent.add_tex_coord(tex_coord)
+
+                face = Face(*list(map(lambda x: FaceVertex(x), vertex_indices)))
+
+                counter = 3
+                for face_vertex in [face.a, face.b, face.c]:
+                    face_vertex.tex_coord = len(self.parent.tex_coords) - counter
+                    counter -= 1
+
+                face.material = material
 
                 self.parent.add_face(face)
-
-                pass
 
             self.counter += 1
 
