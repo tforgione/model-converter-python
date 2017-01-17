@@ -1,11 +1,11 @@
 import os
 import PIL
-from ..basemodel import ModelParser, Exporter, Vertex, Face, FaceVertex, TexCoord, Material
+from ..basemodel import ModelParser, TextModelParser, Exporter, Vertex, Face, FaceVertex, TexCoord, Material
 
 def is_ply(filename):
     return filename[-4:] == '.ply'
 
-class PLYParser(ModelParser):
+class PLYParser(TextModelParser):
 
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)

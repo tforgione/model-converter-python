@@ -134,22 +134,8 @@ class ModelParser:
 
         self.current_part.add_face(face)
 
-    def parse_line(self, string):
-        """Parses a line of a text model
-
-        This method needs to be implemented by each subclass of ModelParser.
-        """
+    def parse_bytes(self, bytes):
         pass
-
-    def parse_file(self, path):
-        """Sets the path of the model and parse each line
-        """
-        self.path = path
-        with open(path) as f:
-            for line in f.readlines():
-                line = line.rstrip()
-                if line != '':
-                    self.parse_line(line)
 
     def draw(self):
         """Draws each part of the model with OpenGL
@@ -220,6 +206,17 @@ class ModelParser:
             face.a.normal = index
             face.b.normal = index
             face.c.normal = index
+
+class TextModelParser(ModelParser):
+    def parse_file(self, path):
+        """Sets the path of the model and parse each line
+        """
+        self.path = path
+        with open(path) as f:
+            for line in f.readlines():
+                line = line.rstrip()
+                if line != '':
+                    self.parse_line(line)
 
 
 class BoundingBox:

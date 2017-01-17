@@ -1,10 +1,10 @@
-from ..basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
+from ..basemodel import TextModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
 from ..mesh import Material, MeshPart
 
 def is_off(filename):
     return filename[-4:] == '.off'
 
-class OFFParser(ModelParser):
+class OFFParser(TextModelParser):
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)
         self.vertex_number = None

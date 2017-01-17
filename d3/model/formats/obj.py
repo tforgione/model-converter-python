@@ -1,4 +1,4 @@
-from ..basemodel import ModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
+from ..basemodel import TextModelParser, Exporter, Vertex, TexCoord, Normal, FaceVertex, Face
 from ..mesh import Material, MeshPart
 from functools import reduce
 import os.path
@@ -8,7 +8,7 @@ import sys
 def is_obj(filename):
     return filename[-4:] == '.obj'
 
-class OBJParser(ModelParser):
+class OBJParser(TextModelParser):
 
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)

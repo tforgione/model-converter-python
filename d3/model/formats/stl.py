@@ -1,4 +1,4 @@
-from ..basemodel import ModelParser, Exporter, Vertex, FaceVertex, Face
+from ..basemodel import TextModelParser, Exporter, Vertex, FaceVertex, Face
 from ..mesh import MeshPart
 
 import os.path
@@ -6,7 +6,7 @@ import os.path
 def is_stl(filename):
     return filename[-4:] == '.stl'
 
-class STLParser(ModelParser):
+class STLParser(TextModelParser):
 
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)
