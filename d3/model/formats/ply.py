@@ -2,7 +2,7 @@ import os
 import sys
 import PIL
 import struct
-from ..basemodel import ModelParser, TextModelParser, Exporter, Vertex, Face, FaceVertex, TexCoord, Material
+from ..basemodel import ModelParser, TextModelParser, Exporter, Vertex, Face, Color, FaceVertex, TexCoord, Material
 
 class UnkownTypeError(Exception):
     def __init__(self, message):
@@ -172,9 +172,42 @@ class PLY_ASCII_ContentParser:
             self.current_element = self.parent.elements[0]
 
         split = string.split()
+        color = None
 
         if self.current_element.name == 'vertex':
-            self.parent.add_vertex(Vertex().from_array(split))
+
+            vertex = Vertex()
+            red = None
+            blue = None
+            green = None
+            alpha = None
+
+            offset = 0
+            for property in self.current_element.properties:
+
+                if property[0] == 'x':
+                    vertex.x = float(split[offset])
+                elif property[0] == 'y':
+                    vertex.y = float(split[offset])
+                elif property[0] == 'z':
+                    vertex.z = float(split[offset])
+                elif property[0] == 'red':
+                    red = float(split[offset]) / 255
+                elif property[0] == 'green':
+                    green = float(split[offset]) / 255
+                elif property[0] == 'blue':
+                    blue = float(split[offset]) / 255
+                elif property[0] == 'alpha':
+                    alpha = float(split[offset]) / 255
+
+                offset += 1
+
+            self.parent.add_vertex(vertex)
+
+            if red is not None:
+                color = Color(red, blue, green)
+                self.parent.add_color(color)
+
         elif self.current_element.name == 'face':
 
             faceVertexArray = []
@@ -183,10 +216,12 @@ class PLY_ASCII_ContentParser:
             # Analyse element
             offset = 0
             for property in self.current_element.properties:
+
                 if property[0] == 'vertex_indices':
                     for i in range(int(split[offset])):
                         faceVertexArray.append(FaceVertex(int(split[i+offset+1])))
                     offset += int(split[0]) + 1
+
                 elif property[0] == 'texcoord':
                     offset += 1
                     for i in range(3):
@@ -195,6 +230,7 @@ class PLY_ASCII_ContentParser:
                         offset += 2
                         self.parent.add_tex_coord(tex_coord)
                         faceVertexArray[i].tex_coord = len(self.parent.tex_coords) - 1
+
                 elif property[0] == 'texnumber':
                     current_material = self.parent.materials[int(split[offset])]
 
@@ -314,8 +350,8 @@ class PLYLittleEndianContentParser:
                     elif property[0] == 'texnumber':
                         material = self.parent.materials[property_values[i]]
 
-                    for tex_coord in tex_coords:
-                        self.parent.add_tex_coord(tex_coord)
+                for tex_coord in tex_coords:
+                    self.parent.add_tex_coord(tex_coord)
 
                 face = Face(*list(map(lambda x: FaceVertex(x), vertex_indices)))
 

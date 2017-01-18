@@ -24,7 +24,6 @@ class Material:
         try:
             ix, iy, image = self.map_Kd.size[0], self.map_Kd.size[1], self.map_Kd.tobytes("raw", "RGBA", 0, -1)
         except:
-            print('Humm')
             ix, iy, image = self.map_Kd.size[0], self.map_Kd.size[1], self.map_Kd.tobytes("raw", "RGBX", 0, -1)
 
         self.id = gl.glGenTextures(1)
@@ -59,7 +58,7 @@ Material.DEFAULT_MATERIAL.Ks = 0.0
 try:
     import PIL.Image
     Material.DEFAULT_MATERIAL.map_Kd = PIL.Image.new("RGBA", (1,1), "white")
-except:
+except ImportError:
     pass
 
 class MeshPart:
@@ -69,6 +68,7 @@ class MeshPart:
         self.vertex_vbo = None
         self.tex_coord_vbo = None
         self.normal_vbo = None
+        self.color_vbo = None
         self.faces = []
 
     def init_texture(self):
@@ -87,6 +87,7 @@ class MeshPart:
         v = []
         n = []
         t = []
+        c = []
 
         for face in self.faces:
             v1 = self.parent.vertices[face.a.vertex]
@@ -106,6 +107,12 @@ class MeshPart:
                 t3 = self.parent.tex_coords[face.c.tex_coord]
                 t += [[t1.x, t1.y], [t2.x, t2.y], [t3.x, t3.y]]
 
+            if len(self.parent.colors) > 0: # face.a.color is not None:
+                c1 = self.parent.colors[face.a.vertex]
+                c2 = self.parent.colors[face.b.vertex]
+                c3 = self.parent.colors[face.c.vertex]
+                c += [[c1.x, c1.y, c1.z], [c2.x, c2.y, c2.z], [c3.x, c3.y, c3.z]]
+
         self.vertex_vbo  = vbo.VBO(array(v, 'f'))
 
         if len(n) > 0:
@@ -113,6 +120,9 @@ class MeshPart:
 
         if len(t) > 0:
             self.tex_coord_vbo = vbo.VBO(array(t, 'f'))
+
+        if len(c) > 0:
+            self.color_vbo = vbo.VBO(array(c, 'f'))
 
     def draw(self):
 
@@ -152,11 +162,18 @@ class MeshPart:
             gl.glTexCoordPointerf(self.tex_coord_vbo)
             self.tex_coord_vbo.unbind()
 
+        if self.color_vbo is not None:
+            self.color_vbo.bind()
+            gl.glEnableClientState(gl.GL_COLOR_ARRAY)
+            gl.glColorPointerf(self.color_vbo)
+            self.color_vbo.unbind()
+
         gl.glDrawArrays(gl.GL_TRIANGLES, 0, len(self.vertex_vbo.data) * 9)
 
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
         gl.glDisableClientState(gl.GL_NORMAL_ARRAY)
         gl.glDisableClientState(gl.GL_TEXTURE_COORD_ARRAY)
+        gl.glDisableClientState(gl.GL_COLOR_ARRAY)
 
 
     def draw_from_arrays(self):

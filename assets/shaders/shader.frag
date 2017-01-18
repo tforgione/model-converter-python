@@ -1,4 +1,5 @@
 varying vec3 fNormal;
+varying vec4 fFrontColor;
 
 vec3 ambientLight = vec3(0.2,0.2,0.2);
 vec3 directionnalLight = normalize(vec3(10,5,7));
@@ -15,7 +16,7 @@ void main() {
     vec4 color = texture2D(tex, gl_TexCoord[0].st);
 
     vec4 fragColor = noTexColor * color;
-    gl_FragColor = fragColor;
+    gl_FragColor = fragColor * fFrontColor;
 
 }
 

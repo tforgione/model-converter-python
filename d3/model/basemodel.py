@@ -3,8 +3,9 @@ from ..geometry import Vector
 from .mesh import Material, MeshPart
 
 Vertex = Vector
-Normal = Vertex
 TexCoord = Vertex
+Normal = Vertex
+Color = Vertex
 
 class FaceVertex:
     """Contains the information a vertex needs in a face
@@ -12,12 +13,13 @@ class FaceVertex:
     In contains the index of the vertex, the index of the texture coordinate
     and the index of the normal. It is None if it is not available.
     """
-    def __init__(self, vertex = None, tex_coord = None, normal = None):
+    def __init__(self, vertex = None, tex_coord = None, normal = None, color = None):
         """Initializes a FaceVertex from its indices
         """
         self.vertex = vertex
         self.tex_coord = tex_coord
         self.normal = normal
+        self.color = color
 
     def from_array(self, arr):
         """Initializes a FaceVertex from an array
@@ -37,6 +39,11 @@ class FaceVertex:
             self.normal  = int(arr[2]) if len(arr) > 2 else None
         except:
             self.normal = None
+
+        try:
+            self.color  = int(arr[3]) if len(arr) > 3 else None
+        except:
+            self.color = None
 
         return self
 
@@ -75,15 +82,13 @@ class ModelParser:
         """
         self.up_conversion = up_conversion
         self.vertices = []
+        self.colors = []
         self.normals = []
         self.tex_coords = []
         self.parts = []
         self.current_part = None
         self.bounding_box = BoundingBox()
         self.center_and_scale = True
-        self.vertex_vbo = None
-        self.tex_coord_vbo = None
-        self.normal_vbo = None
         self.path = None
 
     def init_textures(self):
@@ -120,6 +125,11 @@ class ModelParser:
         """Adds a normal element to the current model
         """
         self.normals.append(normal)
+
+    def add_color(self, color):
+        """Adds a color element to the current model
+        """
+        self.colors.append(color)
 
     def add_face(self, face):
         """Adds a face to the current model
