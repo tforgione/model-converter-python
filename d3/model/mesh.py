@@ -1,7 +1,13 @@
 class Material:
+    """Represents a material
 
-
+    It contains its constants and its texturess. It is also usable with OpenGL
+    """
     def __init__(self, name):
+        """ Creates an empty material
+
+        :param name: name of the material:
+        """
         self.name = name
         self.Ka = None
         self.Kd = None
@@ -10,6 +16,10 @@ class Material:
         self.id = None
 
     def init_texture(self):
+        """ Initializes the OpenGL texture of the current material
+
+        To be simple, calls glGenTextures and stores the given id
+        """
 
         import OpenGL.GL as gl
 
@@ -37,6 +47,8 @@ class Material:
         )
 
     def bind(self):
+        """Binds the material to OpenGL
+        """
         from OpenGL import GL as gl
 
         gl.glEnable(gl.GL_TEXTURE_2D)
@@ -46,11 +58,15 @@ class Material:
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.id)
 
     def unbind(self):
+        """Disables the GL_TEXTURE_2D flag of OpenGL
+        """
         from OpenGL import GL as gl
 
         gl.glDisable(gl.GL_TEXTURE_2D)
 
 Material.DEFAULT_MATERIAL=Material('')
+"""Material that is used when no material is specified
+"""
 Material.DEFAULT_MATERIAL.Ka = 1.0
 Material.DEFAULT_MATERIAL.Kd = 0.0
 Material.DEFAULT_MATERIAL.Ks = 0.0
@@ -62,7 +78,13 @@ except ImportError:
     pass
 
 class MeshPart:
+    """A part of a 3D model that is bound to a single material
+    """
     def __init__(self, parent):
+        """Creates a mesh part
+
+        :param parent: the global model with all the information
+        """
         self.parent = parent
         self.material = None
         self.vertex_vbo = None
@@ -72,13 +94,23 @@ class MeshPart:
         self.faces = []
 
     def init_texture(self):
+        """Initializes the material of the current parent
+        """
         if self.material is not None:
             self.material.init_texture()
 
     def add_face(self, face):
+        """Adds a face to this MeshPart
+
+        :param face: face to add
+        """
         self.faces.append(face)
 
     def generate_vbos(self):
+        """Generates the vbo for this MeshPart
+
+        Creates the arrays that are necessary for smooth rendering
+        """
 
         from OpenGL.arrays import vbo
         from numpy import array
@@ -125,7 +157,10 @@ class MeshPart:
             self.color_vbo = vbo.VBO(array(c, 'f'))
 
     def draw(self):
+        """Draws the current MeshPart
 
+        Binds the material, and draws the model
+        """
         if self.material is not None:
             self.material.bind()
 
@@ -138,6 +173,10 @@ class MeshPart:
             self.material.unbind()
 
     def draw_from_vbos(self):
+        """Simply calls the OpenGL drawArrays function
+
+        Sets the correct vertex arrays and draws the part
+        """
 
         import OpenGL.GL as gl
 
