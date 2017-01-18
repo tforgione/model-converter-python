@@ -325,8 +325,37 @@ class PLYLittleEndianContentParser:
 
             # Add element
             if self.current_element.name == 'vertex':
-                self.parent.add_vertex(Vertex().from_array(property_values))
 
+                vertex = Vertex()
+                red = None
+                green = None
+                blue = None
+                alpha = None
+                offset = 0
+
+                for property in self.current_element.properties:
+
+                    if property[0] == 'x':
+                        vertex.x = property_values[offset]
+                    elif property[0] == 'y':
+                        vertex.y = property_values[offset]
+                    elif property[0] == 'z':
+                        vertex.z = property_values[offset]
+                    elif property[0] == 'red':
+                        red = property_values[offset] / 255
+                    elif property[0] == 'green':
+                        green = property_values[offset] / 255
+                    elif property[0] == 'blue':
+                        blue = property_values[offset] / 255
+                    elif property[0] == 'alpha':
+                        alpha = property_values[offset] / 255
+
+                    offset += 1
+
+                self.parent.add_vertex(vertex)
+
+                if red is not None:
+                    self.parent.add_color(Color(red, blue, green))
 
             elif self.current_element.name == 'face':
 
@@ -356,9 +385,13 @@ class PLYLittleEndianContentParser:
                 face = Face(*list(map(lambda x: FaceVertex(x), vertex_indices)))
 
                 counter = 3
-                for face_vertex in [face.a, face.b, face.c]:
-                    face_vertex.tex_coord = len(self.parent.tex_coords) - counter
-                    counter -= 1
+                if len(tex_coords) > 0:
+                    for face_vertex in [face.a, face.b, face.c]:
+                        face_vertex.tex_coord = len(self.parent.tex_coords) - counter
+                        counter -= 1
+
+                if material is None and len(self.parent.materials) == 1:
+                    material = self.parent.materials[0]
 
                 face.material = material
 
