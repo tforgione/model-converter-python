@@ -6,9 +6,16 @@ import sys
 
 
 def is_obj(filename):
+    """Checks that the file is a .obj file
+
+    Only checks the extension of the file
+    :param filename: path to the file
+    """
     return filename[-4:] == '.obj'
 
 class OBJParser(TextModelParser):
+    """Parser that parses a .obj file
+    """
 
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)
@@ -16,6 +23,10 @@ class OBJParser(TextModelParser):
         self.mtl = None
 
     def parse_line(self, string):
+        """Parses a line of .obj file
+
+        :param string: the line to parse
+        """
         if string == '':
             return
 
@@ -64,13 +75,22 @@ class OBJParser(TextModelParser):
                 print('Face with more than 4 vertices are not supported', file=sys.stderr)
 
 class MTLParser:
-
+    """Parser that parses a .mtl material file
+    """
     def __init__(self, parent):
+        """Creates a MTLParser bound to the OBJParser
+
+        :param parent: the OBJParser this MTLParser refers to
+        """
         self.parent = parent
         self.materials = []
         self.current_mtl = None
 
     def parse_line(self, string):
+        """Parses a line of .mtl file
+
+        :param string: line to  parse
+        """
 
         if string == '':
             return
@@ -109,10 +129,19 @@ class MTLParser:
 
 
 class OBJExporter(Exporter):
+    """Exporter to .obj format
+    """
+
     def __init__(self, model):
+        """Creates an exporter from the model
+
+        :param model: Model to export
+        """
         super().__init__(model)
 
     def __str__(self):
+        """Exports the model
+        """
         current_material = ''
         string = ""
 
