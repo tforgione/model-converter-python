@@ -9,10 +9,19 @@ class UnkownTypeError(Exception):
         self.message  = message
 
 def is_ply(filename):
+    """Checks that the file is a .ply file
+
+    Only checks the extension of the file
+    :param filename: path to the file
+    """
     return filename[-4:] == '.ply'
 
 # List won't work with this function
 def _ply_type_size(type):
+    """Returns the size of a ply property
+
+    :param type: a string that is in a ply element
+    """"
     if type == 'char' or type == 'uchar':
         return 1
     elif type == 'short' or type == 'ushort':
@@ -27,6 +36,10 @@ def _ply_type_size(type):
         raise UnkownTypeError('Type ' + type + ' is unknown')
 
 def ply_type_size(type):
+    """Returns the list containing the sizes of the elements
+
+    :param type: a string that is in a ply element
+    """
     split = type.split()
 
     if len(split) == 1:
@@ -40,6 +53,12 @@ def ply_type_size(type):
 
 
 def bytes_to_element(type, bytes, byteorder = 'little'):
+    """Returns a python object parsed from bytes
+
+    :param type: the type of the object to parse
+    :param bytes: the bytes to read
+    :param byteorder: little or big endian
+    """
     if type == 'char':
         return ord(struct.unpack('<b', bytes)[0])
     if type == 'uchar':
@@ -60,6 +79,8 @@ def bytes_to_element(type, bytes, byteorder = 'little'):
         raise UnkownTypeError('Type ' + type + ' is unknown')
 
 class PLYParser(ModelParser):
+    """Parser that parses a .ply file
+    """
 
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)
@@ -71,6 +92,8 @@ class PLYParser(ModelParser):
         self.header_finished = False
 
     def parse_bytes(self, bytes, byte_counter):
+        """Parses bytes of a .ply file
+        """
         if self.header_finished:
             self.inner_parser.parse_bytes(self.beginning_of_line + bytes, byte_counter - len(self.beginning_of_line))
             self.beginning_of_line = b''
@@ -92,6 +115,8 @@ class PLYParser(ModelParser):
         self.beginning_of_line = current_line
 
 class PLYHeaderParser:
+    """Parser that parses the header of a .ply file
+    """
     def __init__(self, parent):
         self.current_element = None
         self.parent = parent

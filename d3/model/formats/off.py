@@ -2,9 +2,16 @@ from ..basemodel import TextModelParser, Exporter, Vertex, TexCoord, Normal, Fac
 from ..mesh import Material, MeshPart
 
 def is_off(filename):
+    """Checks that the file is a .off file
+
+    Only checks the extension of the file
+    :param filename: path to the file
+    """
     return filename[-4:] == '.off'
 
 class OFFParser(TextModelParser):
+    """Parser that parses a .off file
+    """
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)
         self.vertex_number = None
@@ -12,10 +19,13 @@ class OFFParser(TextModelParser):
         self.edge_number = None
 
     def parse_line(self, string):
+        """Parses a line of .off file
 
+        :param string: the line to parse
+        """
         split = string.split()
 
-        if string == 'OFF':
+        if string == '' or string == 'OFF':
             pass
         elif self.vertex_number is None:
             # The first will be the header
@@ -30,11 +40,18 @@ class OFFParser(TextModelParser):
 
 
 class OFFExporter(Exporter):
+    """Exporter to .off format
+    """
     def __init__(self, model):
+        """Creates an exporter from the model
+
+        :param model: Model to export
+        """
         super().__init__(model)
 
     def __str__(self):
-
+        """Exports the model
+        """
         faces = sum(map(lambda x: x.faces, self.model.parts), [])
         string = "OFF\n{} {} {}".format(len(self.model.vertices), len(faces), 0) + '\n'
 

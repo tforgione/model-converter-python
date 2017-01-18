@@ -4,9 +4,16 @@ from ..mesh import MeshPart
 import os.path
 
 def is_stl(filename):
+    """Checks that the file is a .stl file
+
+    Only checks the extension of the file
+    :param filename: path to the file
+    """
     return filename[-4:] == '.stl'
 
 class STLParser(TextModelParser):
+    """Parser that parses a .stl file
+    """
 
     def __init__(self, up_conversion = None):
         super().__init__(up_conversion)
@@ -17,7 +24,10 @@ class STLParser(TextModelParser):
         self.face_vertices = None
 
     def parse_line(self, string):
+        """Parses a line of .stl file
 
+        :param string: the line to parse
+        """
         if string == '':
             return
 
@@ -66,10 +76,19 @@ class STLParser(TextModelParser):
 
 
 class STLExporter(Exporter):
+    """Exporter to .stl format
+    """
     def __init__(self, model):
+        """Creates an exporter from the model
+
+        :param model: Model to export
+        """
+        super().__init__(model)
         super().__init__(model)
 
     def __str__(self):
+        """Exports the model
+        """
         string = 'solid {}\n'.format(os.path.basename(self.model.path[:-4]))
 
         self.model.generate_face_normals()
