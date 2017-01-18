@@ -12,6 +12,10 @@ class FaceVertex:
 
     In contains the index of the vertex, the index of the texture coordinate
     and the index of the normal. It is None if it is not available.
+    :param vertex: index of the vertex
+    :param tex_coord: index of the texture coordinate
+    :param normal: index of the normal
+    :param color: index of the color
     """
     def __init__(self, vertex = None, tex_coord = None, normal = None, color = None):
         """Initializes a FaceVertex from its indices
@@ -24,9 +28,9 @@ class FaceVertex:
     def from_array(self, arr):
         """Initializes a FaceVertex from an array
 
-        The array can be an array of strings, the first value will be the
-        vertex index, the second will be the texture coordinate index, and the
-        third will be the normal index.
+        :param arr: can be an array of strings, the first value will be the
+        vertex index, the second will be the texture coordinate index, the
+        third will be the normal index, and the fourth will be the color index.
         """
         self.vertex  = int(arr[0]) if len(arr) > 0 else None
 
@@ -56,6 +60,11 @@ class Face:
     """
     def __init__(self, a = None, b = None, c = None, material = None):
         """Initializes a Face with its three FaceVertex and its Material
+
+        :param a: first FaceVertex element
+        :param b: second FaceVertex element
+        :param c: third FaceVertex element
+        :param material: the material to use with this face
         """
         self.a = a
         self.b = b
@@ -66,8 +75,8 @@ class Face:
     def from_array(self, arr):
         """Initializes a Face with an array
 
-        The array should be an array of array of objects.
-        Each array will represent a FaceVertex
+        :param arr: should be an array of array of objects. Each array will
+        represent a FaceVertex
         """
         self.a = FaceVertex().from_array(arr[0])
         self.b = FaceVertex().from_array(arr[1])
@@ -79,6 +88,8 @@ class ModelParser:
     """
     def __init__(self, up_conversion = None):
         """Initializes the model
+
+        :param up_conversion: couple of characters, can be y z or z y
         """
         self.up_conversion = up_conversion
         self.vertices = []
@@ -104,6 +115,8 @@ class ModelParser:
 
         Will also update its bounding box, and convert the up vector if
         up_conversion was specified.
+
+        :param vertex: vertex to add to the model
         """
         # Apply up_conversion to the vertex
         new_vertex = vertex
@@ -118,16 +131,22 @@ class ModelParser:
 
     def add_tex_coord(self, tex_coord):
         """Adds a texture coordinate element to the current model
+
+        :param tex_coord: tex_coord to add to the model
         """
         self.tex_coords.append(tex_coord)
 
     def add_normal(self, normal):
         """Adds a normal element to the current model
+
+        :param normal: normal to add to the model
         """
         self.normals.append(normal)
 
     def add_color(self, color):
         """Adds a color element to the current model
+
+        :param color: color to add to the model
         """
         self.colors.append(color)
 
@@ -136,6 +155,8 @@ class ModelParser:
 
         If the face has a different material than the current material, it will
         create a new mesh part and update the current material.
+
+        :param face: face to add to the model
         """
         if self.current_part is None or (face.material != self.current_part.material and face.material is not None):
             self.current_part = MeshPart(self)
@@ -146,6 +167,10 @@ class ModelParser:
 
     def parse_file(self, path, chunk_size = 512):
         """Sets the path of the model and parse bytes by chunk
+
+        :param path: path to the file to parse
+        :param chunk_size: the file will be read chunk by chunk, each chunk
+        having chunk_size bytes
         """
         self.path = path
         byte_counter = 0
@@ -230,6 +255,8 @@ class ModelParser:
 class TextModelParser(ModelParser):
     def parse_file(self, path):
         """Sets the path of the model and parse each line
+
+        :param path: path to the text file to parse
         """
         self.path = path
         with open(path) as f:
@@ -258,6 +285,8 @@ class BoundingBox:
 
         If the vector is outside the bounding box, the bounding box will be
         enlarged, otherwise, nothing will happen.
+
+        :param vector: the vector that will enlarge the bounding box
         """
         self.min_x = min(self.min_x, vector.x)
         self.min_y = min(self.min_y, vector.y)
@@ -299,6 +328,10 @@ class Exporter:
     """Represents an object that can export a model into a certain format
     """
     def __init__(self, model):
+        """Creates a exporter for the model
+
+        :param model: model to export
+        """
         self.model = model
 
 
