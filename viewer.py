@@ -37,7 +37,7 @@ from d3.model.tools import load_model
 from d3.geometry import Vector
 from d3.controls import TrackBallControls, OrbitControls
 from d3.camera import Camera
-from d3.shader import DefaultShader
+from d3.shader import Shader
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 1024
@@ -112,7 +112,7 @@ def main(args):
     log(' done!\nGenerating vbos...', file=sys.stderr, end='')
     model.generate_vbos()
 
-    shader = DefaultShader()
+    shader = Shader()
 
     log(' Done!\nReady!', file=sys.stderr)
 
