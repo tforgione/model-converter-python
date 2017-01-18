@@ -5,26 +5,43 @@ import OpenGL.GL as gl
 import math
 
 class Controls:
+    """Abstract class for controls
+    """
     def __init__(self):
         pass
 
     def apply(self):
+        """Apply the controls modification to the model view matrix
+        """
         pass
 
     def update(self, time = 10):
+        """Update according to the user's inputs
+        """
         pass
 
 class TrackBallControls(Controls):
+    """Trackball controls
+
+    Simple trackball controls"""
+
     def __init__(self):
+        """Creates a TrackBallControls
+
+        The trackball is centered at the origin
+        """
         super().__init__()
         self.vertex = Vector()
         self.theta = 0
 
     def apply(self):
+        """Apply the rotation of the current trackball
+        """
         gl.glRotatef(self.theta * 180 / math.pi, self.vertex.x, self.vertex.y, self.vertex.z)
 
     def update(self, time = 10):
-
+        """Checks the keyboard inputs and update the angle
+        """
         if not pygame.mouse.get_pressed()[0]:
             return
 
@@ -52,7 +69,13 @@ class TrackBallControls(Controls):
         self.vertex.normalize()
 
 class OrbitControls(Controls):
+    """Simple OrbitControls
+
+    Similar to TrackBallControls but the up vector is preserved"""
+
     def __init__(self):
+        """Creates an OrbitControls with null angles
+        """
         super().__init__()
         self.phi = 0
         self.theta = 0
@@ -65,6 +88,10 @@ class OrbitControls(Controls):
         gl.glRotatef(self.phi * 180 / math.pi, 0.0, 1.0, 0.0)
 
     def apply_event(self, event):
+        """Manages the wheel event
+
+        :param event: a pyevent
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Wheel up
             if event.button == 4:
