@@ -189,6 +189,9 @@ class PLY_ASCII_ContentParser:
 
     def parse_line(self, string):
 
+        if string == '':
+            return
+
         if self.current_element is None:
             self.current_element = self.parent.elements[0]
 

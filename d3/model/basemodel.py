@@ -218,6 +218,8 @@ class ModelParser:
             for face in part.faces:
                 v1 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.b.vertex])
                 v2 = Vertex.from_points(self.vertices[face.a.vertex], self.vertices[face.c.vertex])
+                v1.normalize()
+                v2.normalize()
                 cross = Vertex.cross_product(v1, v2)
                 self.normals[face.a.vertex] += cross
                 self.normals[face.b.vertex] += cross

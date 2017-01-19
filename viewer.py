@@ -72,8 +72,22 @@ def main(args):
 
     # Load and parse the model
     log('Loading model...', file=sys.stderr, end='')
+    sys.stderr.flush()
     model = load_model(args.input, up_conversion)
-    log(' done! (' + str(sum(map(lambda x: len(x.faces), model.parts))) + ' faces)\nInitialiazing OpenGL Context', file=sys.stderr, end='')
+
+    # Compute normals if not already computed
+    if len(model.normals) == 0:
+        log(' done! (' + str(sum(map(lambda x: len(x.faces), model.parts))) + ' faces)\nComputing normals...', file=sys.stderr, end='')
+        sys.stderr.flush()
+        model.generate_vertex_normals()
+
+    # Generate vbos for smooth rendering
+    log(' done!\nGenerating vbos...', file=sys.stderr, end='')
+    sys.stderr.flush()
+    model.generate_vbos()
+
+    log(' done!\nInitialiazing OpenGL Context', file=sys.stderr, end='')
+    sys.stderr.flush()
 
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = OrbitControls()
@@ -100,21 +114,14 @@ def main(args):
 
 
     log(' done!\nInitializing OpenGL textures...', file=sys.stderr, end='')
+    sys.stderr.flush()
     # Initializes OpenGL textures
     model.init_textures()
 
-    # Compute normals if not already computed
-    if len(model.normals) == 0:
-        log(' done!\nComputing normals...', file=sys.stderr, end='')
-        model.generate_vertex_normals()
-
-    # Generate vbos for smooth rendering
-    log(' done!\nGenerating vbos...', file=sys.stderr, end='')
-    model.generate_vbos()
-
     shader = Shader()
 
-    log(' Done!\nReady!', file=sys.stderr)
+    log(' done!\nReady!', file=sys.stderr)
+    sys.stderr.flush()
 
     while running:
         for event in pg.event.get():
