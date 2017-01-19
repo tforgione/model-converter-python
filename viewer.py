@@ -73,7 +73,7 @@ def main(args):
     # Load and parse the model
     log('Loading model...', file=sys.stderr, end='')
     model = load_model(args.input, up_conversion)
-    log(' done!\,Initialiazing OpenGL Context', file=sys.stderr, end='')
+    log(' done! (' + str(sum(map(lambda x: len(x.faces), model.parts))) + ' faces)\nInitialiazing OpenGL Context', file=sys.stderr, end='')
 
     camera = Camera(Vector(0,0,5), Vector(0,0,0))
     controls = OrbitControls()
