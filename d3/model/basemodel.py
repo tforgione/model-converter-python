@@ -97,6 +97,7 @@ class ModelParser:
         self.normals = []
         self.tex_coords = []
         self.parts = []
+        self.materials = []
         self.current_part = None
         self.bounding_box = BoundingBox()
         self.center_and_scale = True
@@ -251,6 +252,13 @@ class ModelParser:
             face.a.normal = index
             face.b.normal = index
             face.c.normal = index
+
+    def get_material_index(self, material):
+        """Finds the index of the given material
+
+        :param material: Material you want the index of
+        """
+        return [i for (i,m) in enumerate(self.materials) if m.name == material.name][0]
 
 class TextModelParser(ModelParser):
     def parse_file(self, path):

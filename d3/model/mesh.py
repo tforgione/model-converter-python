@@ -12,7 +12,9 @@ class Material:
         self.Ka = None
         self.Kd = None
         self.Ks = None
-        self.map_Kd = None
+        self.relative_path_to_texture = None
+        self.absolute_path_to_texture = None
+        self.im = None
         self.id = None
 
     def init_texture(self):
@@ -28,13 +30,21 @@ class Material:
             return
 
         # If no map_Kd, nothing to do
-        if self.map_Kd is None:
-            return
+        if self.im is None:
+
+            if self.absolute_path_to_texture is None:
+                return
+
+            try:
+                import PIL.Image
+                self.im = PIL.Image.open(self.absolute_path_to_texture)
+            except ImportError:
+                return
 
         try:
-            ix, iy, image = self.map_Kd.size[0], self.map_Kd.size[1], self.map_Kd.tobytes("raw", "RGBA", 0, -1)
+            ix, iy, image = self.im.size[0], self.im.size[1], self.im.tobytes("raw", "RGBA", 0, -1)
         except:
-            ix, iy, image = self.map_Kd.size[0], self.map_Kd.size[1], self.map_Kd.tobytes("raw", "RGBX", 0, -1)
+            ix, iy, image = self.im.size[0], self.im.size[1], self.im.tobytes("raw", "RGBX", 0, -1)
 
         self.id = gl.glGenTextures(1)
 
@@ -73,7 +83,7 @@ Material.DEFAULT_MATERIAL.Ks = 0.0
 
 try:
     import PIL.Image
-    Material.DEFAULT_MATERIAL.map_Kd = PIL.Image.new("RGBA", (1,1), "white")
+    Material.DEFAULT_MATERIAL.im = PIL.Image.new("RGBA", (1,1), "white")
 except ImportError:
     pass
 

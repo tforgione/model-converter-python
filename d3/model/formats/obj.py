@@ -42,7 +42,7 @@ class OBJParser(TextModelParser):
                 self.mtl = MTLParser(self)
                 self.mtl.parse_file(path)
             else:
-                print('Warning : ' + path + 'not found ', file=sys.stderr)
+                print('Warning : ' + path + ' not found ', file=sys.stderr)
         elif first == 'v':
             self.add_vertex(Vertex().from_array(split))
         elif first == 'vn':
@@ -55,7 +55,11 @@ class OBJParser(TextModelParser):
             for i in range(len(splits)):
                 for j in range(len(splits[i])):
                     if splits[i][j] is not '':
-                        splits[i][j] = int(splits[i][j]) - 1
+                        splits[i][j] = int(splits[i][j])
+                        if splits[i][j] > 0:
+                            splits[i][j] -= 1
+                        else:
+                            splits[i][j] = len(self.vertices) + splits[i][j]
 
             # if Face3
             if len(split) == 3:
@@ -83,7 +87,6 @@ class MTLParser:
         :param parent: the OBJParser this MTLParser refers to
         """
         self.parent = parent
-        self.materials = []
         self.current_mtl = None
 
     def parse_line(self, string):
@@ -101,7 +104,7 @@ class MTLParser:
 
         if first == 'newmtl':
             self.current_mtl = Material(split[0])
-            self.materials.append(self.current_mtl)
+            self.parent.materials.append(self.current_mtl)
         elif first == 'Ka':
             self.current_mtl.Ka = Vertex().from_array(split)
         elif first == 'Kd':
@@ -109,11 +112,8 @@ class MTLParser:
         elif first == 'Ks':
             self.current_mtl.Ks = Vertex().from_array(split)
         elif first == 'map_Kd':
-            try:
-                import PIL.Image
-                self.current_mtl.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[0]))
-            except:
-                pass
+            self.current_mtl.relative_path_to_texture = split[0]
+            self.current_mtl.absolute_path_to_texture = os.path.join(os.path.dirname(self.parent.path), split[0])
 
 
     def parse_file(self, path):
@@ -123,7 +123,7 @@ class MTLParser:
                 self.parse_line(line)
 
     def __getitem__(self, key):
-        for material in self.materials:
+        for material in self.parent.materials:
             if material.name == key:
                 return material
 

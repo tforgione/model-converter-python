@@ -21,7 +21,7 @@ def _ply_type_size(type):
     """Returns the size of a ply property
 
     :param type: a string that is in a ply element
-    """"
+    """
     if type == 'char' or type == 'uchar':
         return 1
     elif type == 'short' or type == 'ushort':
@@ -86,7 +86,6 @@ class PLYParser(ModelParser):
         super().__init__(up_conversion)
         self.counter = 0
         self.elements = []
-        self.materials = []
         self.inner_parser = PLYHeaderParser(self)
         self.beginning_of_line = ''
         self.header_finished = False
@@ -156,11 +155,8 @@ class PLYHeaderParser:
         elif split[0] == 'comment' and split[1] == 'TextureFile':
             material = Material('mat' + str(len(self.parent.materials)))
             self.parent.materials.append(material)
-
-            try:
-                material.map_Kd = PIL.Image.open(os.path.join(os.path.dirname(self.parent.path), split[2]))
-            except ImportError:
-                pass
+            material.relative_path_to_texture = split[2]
+            material.absolute_path_to_texture = os.path.join(os.path.dirname(self.parent.path), split[2])
 
 class PLYElement:
     def __init__(self, name, number):
@@ -258,6 +254,7 @@ class PLY_ASCII_ContentParser:
 
                 elif property[0] == 'texnumber':
                     current_material = self.parent.materials[int(split[offset])]
+                    offset += 1
 
             face = Face(*faceVertexArray)
             face.material = current_material
@@ -454,13 +451,20 @@ class PLYExporter(Exporter):
         # Header
         string = "ply\nformat ascii 1.0\ncomment Automatically gnerated by model-converter\n"
 
+        for material in self.model.materials:
+            string += "comment TextureFile " + material.relative_path_to_texture + "\n"
+
         # Types : vertices
         string += "element vertex " + str(len(self.model.vertices)) +"\n"
         string += "property float x\nproperty float y\nproperty float z\n"
 
         # Types : faces
         string += "element face " + str(len(faces)) + "\n"
-        string += "property list uint8 int32 vertex_indices\n"
+        string += "property list uchar int vertex_indices\n"
+
+        if len(self.model.tex_coords) > 0:
+            string += "property list uchar float texcoord\n"
+            string += "property int texnumber\n"
 
         # End header
         string += "end_header\n"
@@ -470,7 +474,19 @@ class PLYExporter(Exporter):
             string += str(vertex.x) + " " + str(vertex.y) + " " + str(vertex.z) + "\n"
 
         for face in faces:
-            string += "3 " + str(face.a.vertex) + " " + str(face.b.vertex) + " " + str(face.c.vertex) + "\n"
+            string += "3 " + str(face.a.vertex) + " " + str(face.b.vertex) + " " + str(face.c.vertex)
+
+            if len(self.model.tex_coords) > 0:
+                string += " 6 " \
+                       + str(self.model.tex_coords[face.a.tex_coord].x) + " " \
+                       + str(self.model.tex_coords[face.a.tex_coord].y) + " " \
+                       + str(self.model.tex_coords[face.b.tex_coord].x) + " " \
+                       + str(self.model.tex_coords[face.b.tex_coord].y) + " " \
+                       + str(self.model.tex_coords[face.c.tex_coord].x) + " " \
+                       + str(self.model.tex_coords[face.c.tex_coord].y) + " " \
+                       + str(self.model.get_material_index(face.material))
+
+            string += "\n"
 
         return string
 
