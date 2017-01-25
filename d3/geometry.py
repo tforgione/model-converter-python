@@ -29,6 +29,12 @@ class Vector:
         """
         return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
 
+    def __sub__(self, other):
+        """
+        Subs two vectors
+        """
+        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+
     def __mul__(self, other):
         """
         Computes the product between a vector and a number
