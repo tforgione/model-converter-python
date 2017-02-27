@@ -7,31 +7,34 @@ import os
 import math
 
 # Test dependencies
+missing_dependencies = []
+
 try:
     import PIL
 except:
-    print('You need to install PIL', file=sys.stderr)
-    sys.exit(-1)
+    missing_dependencies.append('pillow')
 
 try:
     import pygame as pg
     import pygame.locals as pgl
 except:
-    print('You need to install pygame', file=sys.stderr)
-    sys.exit(-1)
+    missing_dependencies.append('pygame')
 
 try:
     import OpenGL.GL as gl
     import OpenGL.GLU as glu
 except:
-    print('You need to install pyopengl', file=sys.stderr)
-    sys.exit(-1)
+    missing_dependencies.append('pyopengl')
 
 try:
     import numpy
 except:
-    print('You need to install numpy', file=sys.stderr)
-    sys.exit(-1)
+    missing_dependencies.append('numpy')
+
+if len(missing_dependencies) > 0:
+    print('You are missing the following dependencies :', file=sys.stderr)
+    for dep in missing_dependencies:
+        print(dep, file=sys.stderr)
 
 from d3.model.tools import load_model
 from d3.geometry import Vector
