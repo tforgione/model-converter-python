@@ -1,6 +1,5 @@
 import os
 import sys
-import PIL
 import struct
 from ..basemodel import ModelParser, TextModelParser, Exporter, Vertex, Face, Color, FaceVertex, TexCoord, Material
 
