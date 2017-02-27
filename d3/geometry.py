@@ -41,6 +41,12 @@ class Vector:
         """
         return Vector(self.x * other, self.y * other, self.z * other)
 
+    def __truediv__(self, number):
+        self.x /= number
+        self.y /= number
+        self.z /= number
+        return self
+
     def __rmul__(self, other):
         """
         Computes the product between a vector and a number

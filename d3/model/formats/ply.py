@@ -455,7 +455,7 @@ class PLYExporter(Exporter):
         string = "ply\nformat ascii 1.0\ncomment Automatically gnerated by model-converter\n"
 
         for material in self.model.materials:
-            string += "comment TextureFile " + material.relative_path_to_texture + "\n"
+            string += "comment TextureFile " + (material.relative_path_to_texture or 'None') + "\n"
 
         # Types : vertices
         string += "element vertex " + str(len(self.model.vertices)) +"\n"

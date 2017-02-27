@@ -21,6 +21,7 @@ class OBJParser(TextModelParser):
         super().__init__(up_conversion)
         self.current_material = None
         self.mtl = None
+        self.vertex_offset = 0
 
     def parse_line(self, string):
         """Parses a line of .obj file
@@ -37,7 +38,7 @@ class OBJParser(TextModelParser):
         if first == 'usemtl' and self.mtl is not None:
             self.current_material = self.mtl[split[0]]
         elif first == 'mtllib':
-            path = os.path.join(os.path.dirname(self.path), split[0])
+            path = os.path.join(os.path.dirname(self.path), ' '.join(split[:]))
             if os.path.isfile(path):
                 self.mtl = MTLParser(self)
                 self.mtl.parse_file(path)
@@ -67,16 +68,35 @@ class OBJParser(TextModelParser):
                 face.material = self.current_material
                 self.add_face(face)
 
-            elif len(split) == 4:
-                face = Face().from_array(splits[:3])
-                face.material = self.current_material
-                self.add_face(face)
+            #  Face4 are well supported with the next stuff
+            # elif len(split) == 4:
+            #     face = Face().from_array(splits[:3])
+            #     face.material = self.current_material
+            #     self.add_face(face)
 
-                face = Face().from_array([splits[0], splits[2], splits[3]])
-                face.material = self.current_material
-                self.add_face(face)
+            #     face = Face().from_array([splits[0], splits[2], splits[3]])
+            #     face.material = self.current_material
+            #     self.add_face(face)
+
             else:
-                print('Face with more than 4 vertices are not supported', file=sys.stderr)
+                # Bweeee
+                # First, lets compute all the FaceVertex for each vertex
+                face_vertices = []
+                for face_vertex in splits[:]:
+                    face_vertices.append(FaceVertex(*face_vertex))
+
+                # Then, we build the faces 0 i i+1 for each 1 <= i < len - 1
+                for i in range(1, len(face_vertices) - 1):
+
+                    # Create face with barycenter, i and i + 1
+                    face = Face(face_vertices[0], face_vertices[i], face_vertices[i+1])
+                    face.material = self.current_material
+                    self.add_face(face)
+
+
+
+
+
 
 class MTLParser:
     """Parser that parses a .mtl material file
@@ -103,7 +123,7 @@ class MTLParser:
         split = split[1:]
 
         if first == 'newmtl':
-            self.current_mtl = Material(split[0])
+            self.current_mtl = Material(' '.join(split[:]))
             self.parent.materials.append(self.current_mtl)
         elif first == 'Ka':
             self.current_mtl.Ka = Vertex().from_array(split)
@@ -112,8 +132,8 @@ class MTLParser:
         elif first == 'Ks':
             self.current_mtl.Ks = Vertex().from_array(split)
         elif first == 'map_Kd':
-            self.current_mtl.relative_path_to_texture = split[0]
-            self.current_mtl.absolute_path_to_texture = os.path.join(os.path.dirname(self.parent.path), split[0])
+            self.current_mtl.relative_path_to_texture = ' '.join(split)
+            self.current_mtl.absolute_path_to_texture = os.path.join(os.path.dirname(self.parent.path), ' '.join(split))
 
 
     def parse_file(self, path):
