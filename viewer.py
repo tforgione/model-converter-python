@@ -41,9 +41,11 @@ from d3.geometry import Vector
 from d3.controls import TrackBallControls, OrbitControls
 from d3.camera import Camera
 from d3.shader import Shader
+from d3.model.basemodel import BoundingBox
 
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 1024
+CENTER_AND_SCALE = True
 
 def resize(width, height):
     length = min(width, height)
@@ -74,20 +76,24 @@ def main(args):
             pass
 
     # Load and parse the model
-    log('Loading model...', file=sys.stderr, end='')
     sys.stderr.flush()
-    model = load_model(args.input, up_conversion)
+    models = []
+    for path in args.input:
+        log('Loading model ' + path + '...', file=sys.stderr, end='')
+        model = load_model(path, up_conversion)
 
-    # Compute normals if not already computed
-    if len(model.normals) == 0:
-        log(' done! (' + str(sum(map(lambda x: len(x.faces), model.parts))) + ' faces)\nComputing normals...', file=sys.stderr, end='')
+        # Compute normals if not already computed
+        if len(model.normals) == 0:
+            log(' done! (' + str(sum(map(lambda x: len(x.faces), model.parts))) + ' faces)\nComputing normals...', file=sys.stderr, end='')
+            sys.stderr.flush()
+            model.generate_vertex_normals()
+
+        # Generate vbos for smooth rendering
+        log(' done!\nGenerating vbos...', file=sys.stderr, end='')
         sys.stderr.flush()
-        model.generate_vertex_normals()
+        model.generate_vbos()
 
-    # Generate vbos for smooth rendering
-    log(' done!\nGenerating vbos...', file=sys.stderr, end='')
-    sys.stderr.flush()
-    model.generate_vbos()
+        models.append(model)
 
     log(' done!\nInitialiazing OpenGL Context', file=sys.stderr, end='')
     sys.stderr.flush()
@@ -115,11 +121,22 @@ def main(args):
 
     running = True
 
+    bounding_box = BoundingBox()
+
+    if CENTER_AND_SCALE:
+        for model in models:
+            for vertex in model.vertices:
+                bounding_box.add(vertex)
+
+    log(' done!\nComputing bounding box...', file=sys.stderr, end='')
+
 
     log(' done!\nInitializing OpenGL textures...', file=sys.stderr, end='')
     sys.stderr.flush()
+
     # Initializes OpenGL textures
-    model.init_textures()
+    for model in models:
+        model.init_textures()
 
     shader = Shader()
 
@@ -169,7 +186,21 @@ def main(args):
         # gl.glEnd()
 
         shader.bind()
-        model.draw()
+
+        if CENTER_AND_SCALE:
+            center = bounding_box.get_center()
+            scale = bounding_box.get_scale() / 2
+            gl.glPushMatrix()
+            gl.glScalef(1/scale, 1/scale, 1/scale)
+            gl.glTranslatef(-center.x, -center.y, -center.z)
+
+
+        for model in models:
+            model.draw()
+
+        if CENTER_AND_SCALE:
+            gl.glPopMatrix()
+
         shader.unbind()
         gl.glPopMatrix()
 
@@ -185,7 +216,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=main)
     parser.add_argument('-v', '--version', action='version', version='1.0')
-    parser.add_argument('-i', '--input', metavar='input', default=None, help='Input model')
+    parser.add_argument('-i', '--input', metavar='input', nargs='+', default=None, help='Input model')
     parser.add_argument('-fu', '--from-up', metavar='fup', default=None,
                         help="Initial up vector")
     parser.add_argument('-tu', '--to-up', metavar='fup', default=None,

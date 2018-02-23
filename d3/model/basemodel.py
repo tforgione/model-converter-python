@@ -99,8 +99,6 @@ class ModelParser:
         self.parts = []
         self.materials = []
         self.current_part = None
-        self.bounding_box = BoundingBox()
-        self.center_and_scale = True
         self.path = None
 
     def init_textures(self):
@@ -128,7 +126,6 @@ class ModelParser:
                 new_vertex = Vector(vertex.z, vertex.x, vertex.y)
 
         self.vertices.append(new_vertex)
-        self.bounding_box.add(new_vertex)
 
     def add_tex_coord(self, tex_coord):
         """Adds a texture coordinate element to the current model
@@ -188,18 +185,8 @@ class ModelParser:
         """
         import OpenGL.GL as gl
 
-        if self.center_and_scale:
-            center = self.bounding_box.get_center()
-            scale = self.bounding_box.get_scale() / 2
-            gl.glPushMatrix()
-            gl.glScalef(1/scale, 1/scale, 1/scale)
-            gl.glTranslatef(-center.x, -center.y, -center.z)
-
         for part in self.parts:
             part.draw()
-
-        if self.center_and_scale:
-            gl.glPopMatrix()
 
     def generate_vbos(self):
         """Generates the VBOs of each part of the model

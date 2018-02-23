@@ -64,7 +64,7 @@ def load_model(path, up_conversion = None):
     type = find_type(path, supported_formats)
 
     if type is None:
-        raise Exception("File format not supported")
+        raise Exception("File format not supported \"" + str(type) + "\"")
 
     parser = type.create_parser(up_conversion)
     parser.parse_file(path)
